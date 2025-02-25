@@ -152,6 +152,8 @@ def calc_gt_matrix2tajimaD(gt_matrix):
     theta_w_region = float(S/ a1)
     theta_w_region_corr = np.nansum(S_site)
     theta_w_region_corr = float(theta_w_region_corr)
+
+    print(theta_w_region_corr)
     
     theta_w = float(S / a1 / (L_obs - num_no_count_sites))
     theta_w_corr = float(S / a1_effective / (L_obs - num_no_count_sites))
@@ -212,7 +214,7 @@ def calc_tajimaD_windows(vcf_path, windows_size = 1_000_000, output_csv = "tajim
         pi_h = summary_statistics.get("theta_pi_he")
         pixy = summary_statistics.get("theta_pixy")
         tajima_D = summary_statistics.get("tajima_D")
-        tajimaD_windows_results.append([chrom, start, base_sequenced, S, theta_w_region, pi_h, tajima_D])
+        tajimaD_windows_results.append([chrom, start, base_sequenced, S, theta_w_region, theta_pi_region, tajima_D])
 
     df = pd.DataFrame(tajimaD_windows_results, columns=["Chromosome","Windwos_Start","Bases","S","Theta_Watterson","Theta_pi","Tajima_D"])
     df.to_csv(output_csv, sep=",", index=False)
