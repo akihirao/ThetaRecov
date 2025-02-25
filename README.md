@@ -1,5 +1,5 @@
 # ThetaRecov
-Python package for correct computation of theta and Tajima's D under missing data
+Python package for correct computation of <i>&#952;</i> and Tajima's D in population genetics from a vcf file with missing data
 
 ## What is Tajima's D
 Tajima's D is the normalized difference of two population genetics parameters, the average number of pairwise differences, <i>&#952;</i><sub>&#960;</sub>, and Watterson's theta, <i>&#952;</i><sub>W</sub>. This is scaled to be behaving such that this would be the same as in a neutrally evolving population of constant size.
@@ -12,21 +12,13 @@ Tajima's D is the normalized difference of two population genetics parameters, t
 
 
 ## Installation
-To install locally:
-
+To install:
 ```bash
-git clone https://github.com/akihirao/ThetaRecov.git
-cd ThetaRecov
-pip install ThetaRecov
-```
-or via github
-
 ```bash
 pip install git+https://github.com/akihirao/ThetaRecov.git
 ```
 
 To update:
-
 ```bash
 pip install --upgrade git+https://github.com/akihirao/ThetaRecov.git
 ```
@@ -35,9 +27,9 @@ pip install --upgrade git+https://github.com/akihirao/ThetaRecov.git
 ```bash
 # Computation of Tajima's D across overall sites to write a csv file.
 ## tajimaD_overall(vcf_path, output_path)
-tajimaD_overall("test.vcf.gz","TajimaD_overall.csv")
+tajimaD_overall test.vcf.gz test_TajimaD_overall.csv
 
 # Computation of Tajima's D in sliding windows to write a csv file.
 ## tajimaD_windows(vcf_path, window size, output_path)
-tajimaD_windows("test.vcf.gz",1000,"TajimaD_windows.csv")
+tajimaD_windows test.vcf.gz 1000 test_TajimaD_windows.csv
 ```
