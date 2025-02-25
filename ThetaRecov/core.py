@@ -107,7 +107,7 @@ def calc_gt_matrix2tajimaD(gt_matrix):
     
     num_allel = np.sum(np.isin(gt_matrix, [0,1]), axis=0).astype(int)
     
-    ave_num_allel = np.mean(num_allel)
+    ave_num_allel = np.nanmean(num_allel)
     ave_num_allel = np.rint(ave_num_allel).astype(int)
     num_comparison_ave_num_allel = ave_num_allel * (ave_num_allel - 1) /2
     
@@ -150,22 +150,22 @@ def calc_gt_matrix2tajimaD(gt_matrix):
     a1_effective = sum(1 / i for i in range(1, ave_num_allel))
     
     theta_w_region = float(S/ a1)
-    theta_w_region_cor = np.nansum(S_site)
-    theta_w_region_cor = float(theta_w_region_cor)
+    theta_w_region_corr = np.nansum(S_site)
+    theta_w_region_corr = float(theta_w_region_corr)
     
     theta_w = float(S / a1 / (L_obs - num_no_count_sites))
-    theta_w_cor = float(S / a1_effective / (L_obs - num_no_count_sites))
+    theta_w_corr = float(S / a1_effective / (L_obs - num_no_count_sites))
     
-    tajima_D = calc_tajimaD(S, theta_w_region_cor, theta_pi_region, ave_num_allel)
+    tajima_D = calc_tajimaD(S, theta_w_region_corr, theta_pi_region, ave_num_allel)
     tajima_D = float(tajima_D)
     
     summary_statistics = {"L": L_obs,\
               #"num_samples": num_samples,\
               "S": S,\
               #"theta_w": theta_w,\
-              #"theta_w_cor": theta_w_cor,\
+              "theta_w_corr": theta_w_corr,\
               #"theta_w_region": theta_w_region,\
-              #"theta_w_region_cor": theta_w_region_cor,\
+              #"theta_w_region_corr": theta_w_region_corr,\
               #"theta_pi_region": theta_pi_region,\
               #"theta_pi": theta_pi, \
               #"theta_pi_unweight": theta_pi_unweight,\
@@ -207,14 +207,15 @@ def calc_tajimaD_windows(vcf_path, windows_size = 1_000_000, output_csv = "tajim
         base_sequenced = gt_matrix.shape[1] 
         summary_statistics = calc_gt_matrix2tajimaD(gt_matrix)
         S = summary_statistics.get("S")
+        theta_w = summary_statistics.get("theta_w_corr")
         pi_h = summary_statistics.get("theta_pi_he")
         pixy = summary_statistics.get("theta_pixy")
         tajima_D = summary_statistics.get("tajima_D")
-        #tajimaD_windows_results.append([chrom, start, base_sequenced, S, pi_h, pixy,tajima_D])
-        tajimaD_windows_results.append([chrom, start, base_sequenced, S, pi_h, tajima_D])
+        #tajimaD_windows_results.append([chrom, start, base_sequenced, S, theta_w, pi_h, pixy,tajima_D])
+        tajimaD_windows_results.append([chrom, start, base_sequenced, S, theta_w, pi_h, tajima_D])
 
-    #df = pd.DataFrame(tajimaD_windows_results, columns=["Chromosome","Windwos_Start","Bases","S","Pi","Pixy","Tajima_D"])
-    df = pd.DataFrame(tajimaD_windows_results, columns=["Chromosome","Windwos_Start","Bases","S","Pi","Tajima_D"])
+    #df = pd.DataFrame(tajimaD_windows_results, columns=["Chromosome","Windwos_Start","Bases","S","Watterson_theta_per_bases", "Pi_per_bases","Pixy","Tajima_D"])
+    df = pd.DataFrame(tajimaD_windows_results, columns=["Chromosome","Windwos_Start","Bases","S","Watterson_theta_per_bases","Pi_per_bases","Tajima_D"])
     df.to_csv(output_csv, sep=",", index=False)
     
     return df
@@ -239,14 +240,15 @@ def calc_tajimaD_overall(vcf_path, output_csv = "tajimaD_overall.csv"):
     base_sequenced = gt_matrix.shape[1] 
     summary_statistics = calc_gt_matrix2tajimaD(gt_matrix)
     S = summary_statistics.get("S")
+    theta_w = summary_statistics.get("theta_w_corr")
     pi_h = summary_statistics.get("theta_pi_he")
     pixy = summary_statistics.get("theta_pixy")
     tajima_D = summary_statistics.get("tajima_D")
-    #tajimaD_overall_results.append([base_sequenced, S, pi_h, pixy,tajima_D])
-    tajimaD_overall_results.append([base_sequenced, S, pi_h, tajima_D])
+    #tajimaD_overall_results.append([base_sequenced, S, theta_w, pi_h, pixy,tajima_D])
+    tajimaD_overall_results.append([base_sequenced, S, theta_w, pi_h, tajima_D])
 
-    #df = pd.DataFrame(tajimaD_overall_results, columns=["Bases","S","Pi","Pixy","Tajima_D"])
-    df = pd.DataFrame(tajimaD_overall_results, columns=["Bases","S","Pi","Tajima_D"])
+    #df = pd.DataFrame(tajimaD_overall_results, columns=["Bases","S","Watterson_theta","Pi","Pixy","Tajima_D"])
+    df = pd.DataFrame(tajimaD_overall_results, columns=["Bases","S","Watterson_theta_per_bases","Pi_per_bases","Tajima_D"])
     df.to_csv(output_csv, sep=",", index=False)
     
     return df

@@ -23,7 +23,7 @@ def main():
     parser.add_argument("output_file", type=str, help="Output results file")
     args = parser.parse_args()
     
-	ThetaRecov.corecalc_tajimaD_overall(args.vcf_gz_file, 
+	ThetaRecov.core.corecalc_tajimaD_overall(args.vcf_gz_file, 
         output_csv = args.output_file)
 	
 
