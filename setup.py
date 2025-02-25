@@ -5,13 +5,13 @@ def requirements_from_file(file_name):
 
 setup(
 	names="ThetaRecov",
-	version="0.0.1",
+	version="0.0.2",
 	packages=find_packages(),
 	install_requires=requirements_from_file('requirements.txt'),
 	entry_points={
 		'console_scripts':[
-			'tajimaD_windows=ThetaRecov.cli:exec_calc_tajimaD_windows',
-			'tajimaD_overall=ThetaRecov.cli:exec_calc_tajimaD_overall',
+			'tajimaD_windows=ThetaRecov.cli_windows:main',
+			'tajimaD_overall=ThetaRecov.cli_overall:main',
 		],
 	},
 	description="A package for correct computation of theta and Tajima's D under missing data",
