@@ -160,8 +160,9 @@ def calc_gt_matrix2tajimaD(gt_matrix):
     tajima_D = float(tajima_D)
     
     summary_statistics = {"L": L_obs,\
-              #"num_samples": num_samples,\
               "S": S,\
+              "num_seq": num_allel,\
+              "effective_num_seq": ave_num_allel,\
               #"theta_w": theta_w,\
               #"theta_w_corr": theta_w_corr,\
               #"theta_w_region": theta_w_region,\
@@ -207,14 +208,16 @@ def calc_tajimaD_windows(vcf_path, windows_size = 1_000_000, output_csv = "tajim
         base_sequenced = gt_matrix.shape[1] 
         summary_statistics = calc_gt_matrix2tajimaD(gt_matrix)
         S = summary_statistics.get("S")
+        num_seq = summary_statistics.get("num_seq")
+        effective_num_seq = summary_statistics.get("effective_num_seq")
         theta_w_region = summary_statistics.get("theta_w_region_corr")
         theta_pi_region = summary_statistics.get("theta_pi_region")
         pi_h = summary_statistics.get("theta_pi_he")
         pixy = summary_statistics.get("theta_pixy")
         tajima_D = summary_statistics.get("tajima_D")
-        tajimaD_windows_results.append([chrom, start, base_sequenced, S, theta_w_region, theta_pi_region, tajima_D])
+        tajimaD_windows_results.append([chrom,start,base_sequenced,S,num_seq,effective_num_seq,theta_w_region,theta_pi_region,tajima_D])
 
-    df = pd.DataFrame(tajimaD_windows_results, columns=["Chromosome","Windwos_Start","Bases","S","Theta_Watterson","Theta_pi","Tajima_D"])
+    df = pd.DataFrame(tajimaD_windows_results, columns=["Chromosome","Windwos_Start","Bases","S","N_seq","Ne_seq","Theta_Watterson","Theta_pi","Tajima_D"])
     df.to_csv(output_csv, sep=",", index=False)
     
     return df
@@ -239,14 +242,16 @@ def calc_tajimaD_overall(vcf_path, output_csv = "tajimaD_overall.csv"):
     base_sequenced = gt_matrix.shape[1] 
     summary_statistics = calc_gt_matrix2tajimaD(gt_matrix)
     S = summary_statistics.get("S")
+    num_seq = summary_statistics.get("num_seq")
+    effective_num_seq = summary_statistics.get("effective_num_seq")    
     theta_w_region = summary_statistics.get("theta_w_region_corr")
     theta_pi_region = summary_statistics.get("theta_pi_region")
     pi_h = summary_statistics.get("theta_pi_he")
     pixy = summary_statistics.get("theta_pixy")
     tajima_D = summary_statistics.get("tajima_D")
-    tajimaD_overall_results.append([base_sequenced, S, theta_w_region, theta_pi_region, tajima_D])
+    tajimaD_overall_results.append([base_sequenced,S,num_seq,effective_num_seq,theta_w_region,theta_pi_region,tajima_D])
 
-    df = pd.DataFrame(tajimaD_overall_results, columns=["Bases","S","Theta_Watterson","Theta_Pi","Tajima_D"])
+    df = pd.DataFrame(tajimaD_overall_results, columns=["Bases","S","N_seq","Ne_seq","Theta_Watterson","Theta_Pi","Tajima_D"])
     df.to_csv(output_csv, sep=",", index=False)
     
     return df
