@@ -14,7 +14,6 @@ Tajima's D is the normalized difference of two population genetics parameters, t
 ## Installation
 To install:
 ```bash
-```bash
 pip install git+https://github.com/akihirao/ThetaRecov.git
 ```
 
