@@ -25,10 +25,8 @@ pip install --upgrade git+https://github.com/akihirao/ThetaRecov.git
 ## An example of execution
 ```bash
 # Computation of Tajima's D across overall sites to write a csv file.
-## tajimaD_overall(vcf_path, output_path)
 tajimaD_overall test.vcf.gz test_TajimaD_overall.csv
 
 # Computation of Tajima's D in sliding windows to write a csv file.
-## tajimaD_windows(vcf_path, window size, output_path)
 tajimaD_windows test.vcf.gz 1000 test_TajimaD_windows.csv
 ```
