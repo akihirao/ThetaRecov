@@ -19,10 +19,14 @@ def main():
         pandas data frame of estimated parameters 
     """
     parser = argparse.ArgumentParser(description="Compute theta and Tajima's D in sliding windows.\nChromosome: chromosome or scaffold\nWindwos_Start: Window start position\nBases: bases sequenced\nS: number of seqregating sites\nTheta_Watterson: Watterson's theta\nTheta pi\nTajima_D: Tajima's D")
-    parser.add_argument("input_vcf", type=str, help="Input VCF/VCF.gz")
-    parser.add_argument("windows_size", type=int, help="size of sliding windows (bp)")
-    parser.add_argument("output_csv", type=str, help="Output file as csv")
-
+    parser._action_groups.pop()
+    required = parser.add_argument_group('required arguments')
+    optional = parser.add_argument_group('optional arguments')
+    
+    required.add_argument('--input_vcf', type=str, nargs = '?', help = 'Input VCF/VCF.gz', required = True)
+    required.add_argument('--output_csv', type=str, nargs = '?', help = 'Output csv', required = True)
+    required.add_argument('--windows_size', type=int, nargs = '?', help = 'size of sliding windows (bp)', required = True)
+    
     args = parser.parse_args()
         
     ThetaRecov.core.calc_tajimaD_windows(args.input_vcf,
