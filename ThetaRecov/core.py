@@ -152,8 +152,6 @@ def calc_gt_matrix2tajimaD(gt_matrix):
     theta_w_region = float(S/ a1)
     theta_w_region_corr = np.nansum(S_site)
     theta_w_region_corr = float(theta_w_region_corr)
-
-    print(theta_w_region_corr)
     
     theta_w = float(S / a1 / (L_obs - num_no_count_sites))
     theta_w_corr = float(S / a1_effective / (L_obs - num_no_count_sites))
@@ -241,12 +239,12 @@ def calc_tajimaD_overall(vcf_path, output_csv = "tajimaD_overall.csv"):
     base_sequenced = gt_matrix.shape[1] 
     summary_statistics = calc_gt_matrix2tajimaD(gt_matrix)
     S = summary_statistics.get("S")
-    theta_w = summary_statistics.get("theta_w_corr")
+    theta_w_region = summary_statistics.get("theta_w_region_corr")
     theta_pi_region = summary_statistics.get("theta_pi_region")
     pi_h = summary_statistics.get("theta_pi_he")
     pixy = summary_statistics.get("theta_pixy")
     tajima_D = summary_statistics.get("tajima_D")
-    tajimaD_overall_results.append([base_sequenced, S, theta_w, theta_pi_region, tajima_D])
+    tajimaD_overall_results.append([base_sequenced, S, theta_w_region, theta_pi_region, tajima_D])
 
     df = pd.DataFrame(tajimaD_overall_results, columns=["Bases","S","Theta_Watterson","Theta_Pi","Tajima_D"])
     df.to_csv(output_csv, sep=",", index=False)
