@@ -1,0 +1,43 @@
+# ThetaRecov
+Python package for correct computation of theta and Tajima's D under missing data
+
+## What is Tajima's D
+Tajima's D is the normalized difference of two population genetics parameters, the average number of pairwise differences, <i>&#952;</i><sub>&#960;</sub>, and Watterson's theta, <i>&#952;</i><sub>W</sub>. This is scaled to be behaving such that this would be the same as in a neutrally evolving population of constant size.
+
+## Requirements
+* Python packages
+	* cyvcf2: a fast VCF parser https://brentp.github.io/cyvcf2
+	* numpy: a fundamental package for scientific computing https://github.com/numpy/numpy
+	* pandas: python data analysis library https://pandas.pydata.org
+
+
+## Installation
+To install locally:
+
+```bash
+git clone https://github.com/akihirao/ThetaRecov.git
+cd ThetaRecov
+pip install ThetaRecov
+```
+or via github
+
+```bash
+pip install git+https://github.com/akihirao/ThetaRecov.git
+```
+
+To update:
+
+```bash
+pip install --upgrade git+https://github.com/akihirao/ThetaRecov.git
+```
+
+## An example of execution
+```bash
+# Computation of Tajima's D across overall sites to write a csv file.
+## tajimaD_overall(vcf_path, output_path)
+tajimaD_overall("test.vcf.gz","TajimaD_overall.csv")
+
+# Computation of Tajima's D in sliding windows to write a csv file.
+## tajimaD_windows(vcf_path, window size, output_path)
+tajimaD_windows("test.vcf.gz",1000,"TajimaD_windows.csv")
+```
