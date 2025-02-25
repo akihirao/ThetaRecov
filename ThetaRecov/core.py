@@ -161,7 +161,7 @@ def calc_gt_matrix2tajimaD(gt_matrix):
     
     summary_statistics = {"L": L_obs,\
               "S": S,\
-              "num_seq": num_allel,\
+              "num_seq": num_allel_exp,\
               "effective_num_seq": ave_num_allel,\
               #"theta_w": theta_w,\
               #"theta_w_corr": theta_w_corr,\
