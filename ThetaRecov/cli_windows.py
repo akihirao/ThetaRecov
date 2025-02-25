@@ -19,13 +19,15 @@ def main():
         pandas data frame of estimated parameters 
     """
     parser = argparse.ArgumentParser(description="Compute theta and Tajima's D in sliding windows from a vcf file.")
-    parser.add_argument("vcf_file", type=str, help="Input VCF file")
+    parser.add_argument("vcf_gz_file", type=str, help="Input VCF file")
     parser.add_argument("windows_size", type=int, help="size of windows")
     parser.add_argument("output_file", type=str, help="Output results file")
 
     args = parser.parse_args()
         
-    ThetaRecov.calc_tajimaD_windows(args.vcf_file, args.windows_size, args.output_file)
+    ThetaRecov.calc_tajimaD_windows(args.vcf_gz_file,
+        windows_size = args.windows_size,
+        output_csv = args.output_file)
     
 
 if __name__ == "__main__":

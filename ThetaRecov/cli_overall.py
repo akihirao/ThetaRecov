@@ -18,12 +18,10 @@ def main():
         pandas data frame of estimated parameters 
     """
     parser = argparse.ArgumentParser(description="Compute theta and Tajima's D across overall genome from a vcf file.")
-    parser.add_argument("vcf_file", type=str, help="Input VCF file")
+    parser.add_argument("vcf_gz_file", type=str, help="Input VCF file")
     parser.add_argument("output_file", type=str, help="Output results file")
-
     args = parser.parse_args()
-		
-	ThetaRecov.calc_tajimaD_windows(args.vcf_file, args.output_file)
+	ThetaRecov.calc_tajimaD_overall(args.vcf_gz_file, output_csv = args.output_file)
 	
 
 if __name__ == "__main__":
