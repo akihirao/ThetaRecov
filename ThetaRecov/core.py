@@ -155,8 +155,6 @@ def calc_gt_matrix2tajimaD(gt_matrix):
     
     theta_w = float(S / a1 / (L_obs - num_no_count_sites))
     theta_w_corr = float(S / a1_effective / (L_obs - num_no_count_sites))
-
-    print(theta_w_corr)
     
     tajima_D = calc_tajimaD(S, theta_w_region_corr, theta_pi_region, ave_num_allel)
     tajima_D = float(tajima_D)
