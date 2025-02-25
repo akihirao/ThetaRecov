@@ -6,7 +6,7 @@ import pandas as pd
 from cyvcf2 import VCF
 
 import ThetaRecov
-
+form ThetaRecov.core import calc_tajimaD_windows
 
 def main():
     """
@@ -25,7 +25,7 @@ def main():
 
     args = parser.parse_args()
         
-    ThetaRecov.calc_tajimaD_windows(args.vcf_gz_file,
+    ThetaRecov.core.calc_tajimaD_windows(args.vcf_gz_file,
         windows_size = args.windows_size,
         output_csv = args.output_file)
     

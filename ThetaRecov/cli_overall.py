@@ -6,6 +6,7 @@ import pandas as pd
 from cyvcf2 import VCF
 
 import ThetaRecov
+form ThetaRecov.core import calc_tajimaD_overall
 
 
 def main():
@@ -21,7 +22,9 @@ def main():
     parser.add_argument("vcf_gz_file", type=str, help="Input VCF file")
     parser.add_argument("output_file", type=str, help="Output results file")
     args = parser.parse_args()
-	ThetaRecov.calc_tajimaD_overall(args.vcf_gz_file, output_csv = args.output_file)
+    
+	ThetaRecov.corecalc_tajimaD_overall(args.vcf_gz_file, 
+        output_csv = args.output_file)
 	
 
 if __name__ == "__main__":
