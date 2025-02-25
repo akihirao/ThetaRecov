@@ -18,16 +18,15 @@ def main():
         pandas data frame of estimated parameters
     """
     parser = argparse.ArgumentParser(description="Compute theta and Tajima's D across overall genome.\nBases: bases sequenced\nS: number of seqregating sites\nTheta_Watterson: Watterson's theta\nTheta pi\nTajima_D: Tajima's D")
+    parser._action_groups.pop()
     #parser.add_argument("input_vcf", type=str, help="Input VCF/VCF.gz")
     #parser.add_argument("output_csv", type=str, help="Output csv")
-
     required = parser.add_argument_group('required arguments')
     optional = parser.add_argument_group('optional arguments')
-
+    
     required.add_argument('--input_vcf', type=str, nargs = '?', help = 'Input VCF/VCF.gz', required = True)
     required.add_argument('--output_csv', type=str, nargs = '?', help = 'Output csv', required = True)
     
-
     args = parser.parse_args()
     
     ThetaRecov.core.calc_tajimaD_overall(args.input_vcf,
