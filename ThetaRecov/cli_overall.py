@@ -8,7 +8,6 @@ from cyvcf2 import VCF
 import ThetaRecov
 from ThetaRecov.core import calc_tajimaD_overall
 
-
 def main():
     """
     Computation and output of parameters, theta and Tajima's D, across overall genome
@@ -23,8 +22,7 @@ def main():
     parser.add_argument("output_file", type=str, help="Output results file")
     args = parser.parse_args()
     
-	ThetaRecov.core.calc_tajimaD_overall(args.vcf_gz_file, 
-        output_csv = args.output_file)
+    ThetaRecov.core.calc_tajimaD_overall(args.vcf_gz_file,output_csv = args.output_file)
 	
 
 if __name__ == "__main__":
