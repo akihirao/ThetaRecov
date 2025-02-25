@@ -6,7 +6,7 @@ import pandas as pd
 from cyvcf2 import VCF
 
 import ThetaRecov
-form ThetaRecov.core import calc_tajimaD_windows
+from ThetaRecov.core import calc_tajimaD_windows
 
 def main():
     """
