@@ -11,7 +11,7 @@ def vcf2gt_matrix(input_vcf_file):
         input_vcf_file:
         missing_ratio（float, optional): set from 0 to 1 (defalt = 0)
     Returns:
-        gt_matrix: 遺伝子型情報のndarrayオブジェクト        
+        gt_matrix: 遺伝子型情報のndarrayオブジェクト
     """
     vcf_reader = VCF(input_vcf_file)
 
@@ -28,14 +28,14 @@ def vcf2gt_matrix(input_vcf_file):
         for gt in gts:
             gts_list.append(gt[0])
             gts_list.append(gt[1])
-        gt_matrix.append(gts_list)   
+        gt_matrix.append(gts_list)
 
     gt_matrix = np.array(gt_matrix).T
        
-    #if the source vcf file includes missing genotypes, substitute "nan".   
+    #if the source vcf file includes missing genotypes, substitute "nan".
     if np.isnan(gt_matrix).any():
         gt_matrix = np.where(gt_matrix == -1, np.nan, gt_matrix)
-        warnings.warn("The input vcf includes missing genotypes.")          
+        warnings.warn("The input vcf includes missing genotypes.")
     
     return gt_matrix
 
@@ -56,7 +56,7 @@ def parse_genotypes(variants):
             processed_genotypes.extend(alleles)
 
         all_genotypes.append(processed_genotypes)
-       
+
     return np.array(all_genotypes).T
 
 
@@ -75,10 +75,10 @@ def calc_tajimaD(S, theta_w_region, theta_pi_region,n):
         c2 = b2 - (n + 2) / (a1 * n ) + a2 / (a1 ** 2)
         e1 = c1 / a1
         e2 = c2 / (a1 ** 2 + a2)
-   
-        variance = (e1 * S) + (e2 * S * (S - 1))   
+
+        variance = (e1 * S) + (e2 * S * (S - 1))
     
-        if not variance == 0: 
+        if not variance == 0:
             tajima_d = (theta_pi_region - theta_w_region) / np.sqrt(variance)
         else:
             tajima_d = np.nan #void division by zero
@@ -97,7 +97,7 @@ def calc_gt_matrix2tajimaD(gt_matrix):
         gt_matrix: vcf_fileから生成した genotypes 情報のndarrayオブジェクト
     Returns:
         theta hogehoge
-        
+    
     """
     num_allel_exp, L_obs = gt_matrix.shape
     num_samples = int(num_allel_exp /2)
@@ -122,12 +122,12 @@ def calc_gt_matrix2tajimaD(gt_matrix):
         freq_ref_hom = freq_ref**2
         freq_alt_hom = freq_alt**2
         return  (1 - freq_ref_hom - freq_alt_hom ) * (num_allel) /(num_allel -1)
-        
+    
     het = np.where(num_allel > 1, make_het(freq_ref, freq_alt, num_allel), np.nan)
     
     a1_site = np.array([np.sum(1 / np.arange(1,i)) if i > 1 else 0 for i in num_allel])
     S_site = (het > 0).astype(int) / a1_site
-        
+    
     S = np.sum(het > 0).astype(int)
 
     theta_pi = np.sum(num_diff/num_comparisons_complete)/L_obs
@@ -189,7 +189,7 @@ def calc_tajimaD_windows(vcf_path, windows_size = 1_000_000, output_csv = "tajim
         output_csv: an ouput file name (defualt: "tajimaD_windows.csv")
     Returns:
         a csv file contains positons and estimates as follows: Chromosome, Windows position, Bases, S, Pi, Pixy, Tajima's D
-        
+    
     """
 
     vcf = VCF(vcf_path)
@@ -204,8 +204,11 @@ def calc_tajimaD_windows(vcf_path, windows_size = 1_000_000, output_csv = "tajim
 
     
     for (chrom, start), variants in windows.items():
-        gt_matrix = parse_genotypes(variants)
-        base_sequenced = gt_matrix.shape[1] 
+        gt_matrix_unfiltered_nan = parse_genotypes(variants)
+        nan_cols = np.all(np.isnan(gt_matrix_unfiltered_nan), axis=0) #各列について全てが NaN かを判定
+        gt_matrix = gt_matrix_unfiltered_nan[:, ~nan_cols] # NaN だけの列を削除
+
+        base_sequenced = gt_matrix.shape[1]
         summary_statistics = calc_gt_matrix2tajimaD(gt_matrix)
         S = summary_statistics.get("S")
         num_seq = summary_statistics.get("num_seq")
@@ -221,7 +224,7 @@ def calc_tajimaD_windows(vcf_path, windows_size = 1_000_000, output_csv = "tajim
     df.to_csv(output_csv, sep=",", index=False)
     
     return df
- 
+
 
 #==========================================================================
 def calc_tajimaD_overall(vcf_path, output_csv = "tajimaD_overall.csv"):
@@ -232,18 +235,21 @@ def calc_tajimaD_overall(vcf_path, output_csv = "tajimaD_overall.csv"):
         output_csv: an ouput file name (defualt: "tajimaD_overall.csv")
     Returns:
         a csv file contains positons and estimates as follows: Bases, S, Pi, Pixy, Tajima's D
-         
+    
     """
 
     tajimaD_overall_results = []
     
-    gt_matrix = vcf2gt_matrix(vcf_path)
-          
-    base_sequenced = gt_matrix.shape[1] 
+    gt_matrix_unfiltered_nan = vcf2gt_matrix(vcf_path)
+
+    nan_cols = np.all(np.isnan(gt_matrix_unfiltered_nan), axis=0) #各列について全てが NaN かを判定
+    gt_matrix = gt_matrix_unfiltered_nan[:, ~nan_cols] # NaN だけの列を削除
+
+    base_sequenced = gt_matrix.shape[1]
     summary_statistics = calc_gt_matrix2tajimaD(gt_matrix)
     S = summary_statistics.get("S")
     num_seq = summary_statistics.get("num_seq")
-    effective_num_seq = summary_statistics.get("effective_num_seq")    
+    effective_num_seq = summary_statistics.get("effective_num_seq")
     theta_w_region = summary_statistics.get("theta_w_region_corr")
     theta_pi_region = summary_statistics.get("theta_pi_region")
     pi_h = summary_statistics.get("theta_pi_he")
