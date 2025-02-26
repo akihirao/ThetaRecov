@@ -18,7 +18,7 @@ To update:
 pip install --upgrade git+https://github.com/akihirao/ThetaRecov.git
 ```
 
-## Working eamples
+## Working examples
 ```bash
 # Computation of theta and Tajima's D across overall genome
 tajimaD_overall --input_vcf test.vcf.gz --output_csv test_TajimaD_overall.csv
