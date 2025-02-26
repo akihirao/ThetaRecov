@@ -208,6 +208,7 @@ def calc_tajimaD_windows(vcf_path, windows_size = 1_000_000, output_csv = "tajim
         gt_matrix = gt_matrix_unfiltered_nan[:, ~nan_cols] # Delete NaN-only columns
 
         base_sequenced = gt_matrix.shape[1]
+        start_lab = start + 1
         summary_statistics = calc_gt_matrix2tajimaD(gt_matrix)
         S = summary_statistics.get("S")
         num_seq = summary_statistics.get("num_seq")
@@ -217,9 +218,9 @@ def calc_tajimaD_windows(vcf_path, windows_size = 1_000_000, output_csv = "tajim
         pi_h = summary_statistics.get("theta_pi_he")
         pixy = summary_statistics.get("theta_pixy")
         tajima_D = summary_statistics.get("tajima_D")
-        tajimaD_windows_results.append([chrom,start,base_sequenced,S,num_seq,effective_num_seq,theta_w_region,theta_pi_region,tajima_D])
+        tajimaD_windows_results.append([chrom,start_lab,base_sequenced,S,num_seq,effective_num_seq,theta_w_region,theta_pi_region,tajima_D])
 
-    df = pd.DataFrame(tajimaD_windows_results, columns=["Chromosome","Windwos_Start","Bases","S","N_seq","Ne_seq","Theta_Watterson","Theta_pi","Tajima_D"])
+    df = pd.DataFrame(tajimaD_windows_results, columns=["Chromosome","Windows_Start","Bases","S","N_seq","Ne_seq","Theta_Watterson","Theta_pi","Tajima_D"])
     df.to_csv(output_csv, sep=",", index=False)
     
     return df
