@@ -1,14 +1,10 @@
 # ThetaRecov
-Python package to correctly estimate population genetic parameters, <i>&#952;</i> and Tajima's D, from a vcf file with missing data
+Python package to correctly estimate Tajima's D statistics and the population mutation rate from a vcf file with missing data
 
 ## What is Tajima's D
-Tajima's D is the normalized difference of two population genetics parameters, the average number of pairwise differences, <i>&#952;</i><sub>&#960;</sub>, and Watterson's theta, <i>&#952;</i><sub>W</sub>. This is scaled to be behaving such that this would be the same as in a neutrally evolving population of constant size.
-
-## Requirements
-* Python packages
-	* cyvcf2: a fast VCF parser https://brentp.github.io/cyvcf2
-	* numpy: a fundamental package for scientific computing https://github.com/numpy/numpy
-	* pandas: python data analysis library https://pandas.pydata.org
+Tajima's D is the normalized difference in two emprical estimators of population mutation rate, <i>&#952;</i><sub>&#960;</sub> and <i>&#952;</i><sub>W</sub>. This is scaled to be behaving such that this would be the same as in a neutrally evolving population of constant size.
+*  <i>&#952;</i><sub>&#960;</sub>: a measure of population mutation rate calculated from the average number of pairwise nucleotide differences among haplotype copies of a locus
+* <i>&#952;</i><sub>W</sub>: a measure of population mutation rate calculated from the number of segragating site (S), also referred to as Watterson's <i>&#952;</i>. 
 
 
 ## Installation

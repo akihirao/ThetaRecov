@@ -6,12 +6,11 @@ from cyvcf2 import VCF
 #=======================================
 def vcf2gt_matrix(input_vcf_file):
     """
-    vcf_fileからgt_matrix (ndarrayオブジェクト)を生成
+    Generate gt_matrix as ndarray object from a vcf file
     Parameters:
         input_vcf_file:
-        missing_ratio（float, optional): set from 0 to 1 (defalt = 0)
     Returns:
-        gt_matrix: 遺伝子型情報のndarrayオブジェクト
+        gt_matrix: a ndarray object that stores genotypic information
     """
     vcf_reader = VCF(input_vcf_file)
 
@@ -92,11 +91,11 @@ def calc_tajimaD(S, theta_w_region, theta_pi_region,n):
 #=======================================
 def calc_gt_matrix2tajimaD(gt_matrix):
     """
-    gt_matrix(vcf_fileから生成したndarrayオブジェクト）からthetaを算出
+    compulation theta from gt_matrix as an ndarray object
     Parameters:
-        gt_matrix: vcf_fileから生成した genotypes 情報のndarrayオブジェクト
+        gt_matrix: an ndarray object that stores genotypic information
     Returns:
-        theta hogehoge
+        summary_statistics
     
     """
     num_allel_exp, L_obs = gt_matrix.shape
@@ -199,14 +198,14 @@ def calc_tajimaD_windows(vcf_path, windows_size = 1_000_000, output_csv = "tajim
     for variant in vcf:
         chrom = variant.CHROM
         pos = variant.POS
-        window_start = ((pos - 1) // windows_size) * windows_size #ウィンドウの開始位置
+        window_start = ((pos - 1) // windows_size) * windows_size #Window start position
         windows.setdefault((chrom, window_start), []).append(variant)
 
     
     for (chrom, start), variants in windows.items():
         gt_matrix_unfiltered_nan = parse_genotypes(variants)
-        nan_cols = np.all(np.isnan(gt_matrix_unfiltered_nan), axis=0) #各列について全てが NaN かを判定
-        gt_matrix = gt_matrix_unfiltered_nan[:, ~nan_cols] # NaN だけの列を削除
+        nan_cols = np.all(np.isnan(gt_matrix_unfiltered_nan), axis=0) #Determine if all are NaN for each column
+        gt_matrix = gt_matrix_unfiltered_nan[:, ~nan_cols] # Delete NaN-only columns
 
         base_sequenced = gt_matrix.shape[1]
         summary_statistics = calc_gt_matrix2tajimaD(gt_matrix)
@@ -242,8 +241,8 @@ def calc_tajimaD_overall(vcf_path, output_csv = "tajimaD_overall.csv"):
     
     gt_matrix_unfiltered_nan = vcf2gt_matrix(vcf_path)
 
-    nan_cols = np.all(np.isnan(gt_matrix_unfiltered_nan), axis=0) #各列について全てが NaN かを判定
-    gt_matrix = gt_matrix_unfiltered_nan[:, ~nan_cols] # NaN だけの列を削除
+    nan_cols = np.all(np.isnan(gt_matrix_unfiltered_nan), axis=0) #Determine if all are NaN for each column
+    gt_matrix = gt_matrix_unfiltered_nan[:, ~nan_cols] # Delete NaN-only columns
 
     base_sequenced = gt_matrix.shape[1]
     summary_statistics = calc_gt_matrix2tajimaD(gt_matrix)

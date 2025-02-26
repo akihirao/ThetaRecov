@@ -22,8 +22,8 @@ def main():
     required = parser.add_argument_group('required arguments')
     optional = parser.add_argument_group('optional arguments')
     
-    required.add_argument('--input_vcf', type=str, nargs = '?', help = 'Input VCF/VCF.gz', required = True)
-    required.add_argument('--output_csv', type=str, nargs = '?', help = 'Output csv', required = True)
+    required.add_argument('--input_vcf', '-in', type=str, nargs = '?', help = 'Input VCF/VCF.gz', required = True)
+    optional.add_argument('--output_csv', '-out', type=str, nargs = '?', help = 'Output csv', default = "tajimaD_overall.csv")
     
     args = parser.parse_args()
     
