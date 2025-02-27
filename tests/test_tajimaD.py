@@ -31,8 +31,10 @@ class Test_calc_tajimaD(unittest.TestCase):
 		test method for calc_tajimaD_windows
 		"""
 		actual = ThetaRecov.core.calc_tajimaD_windows("test.vcf.gz", windows_size=1000,output_csv="test_tajimaD_windows.csv")
-		#expected = pd.read_csv("tajimaD_windows.csv")
-	    #self.assertTrue(filecmp.cmp("tajimaD_windows.csv","test_tajimaD_windows.csv",shallow=False))
+		expected = pd.read_csv("tajimaD_windows.csv")
+		actual_TajimaD = pd.DataFrame({'Tajima_D': actual['Tajima_D'].astype(float)})
+		expected_TajimaD = pd.DataFrame({'Tajima_D': expected['Tajima_D'].astype(float)})
+		assert_frame_equal(actual_TajimaD,expected_TajimaD)
 
 
 if __name__ == "__main__":
