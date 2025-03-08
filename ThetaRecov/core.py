@@ -5,6 +5,8 @@ from itertools import combinations
 
 from cyvcf2 import VCF
 
+
+
 #=======================================
 def vcf2gt_matrix(input_vcf_file):
     """
@@ -295,6 +297,7 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
 
 
     diff_among = 0
+    num_diff_comb = num_indiv * (num_indiv - 1) // 2
 
     # (i, j) の組み合わせを全て列挙 (i < j のみ)
     for i, j in combinations(range(gt_matrix_n_2_m.shape[0]), 2):
@@ -308,7 +311,7 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
         diff_among += np.sum(diff_11) + np.sum(diff_12) + np.sum(diff_21) + np.sum(diff_22)
 
 
-    pi_among = diff_among/4/num_indiv/base_sequenced
+    pi_among = diff_among/4/num_diff_comb/base_sequenced
 
     homo_deviance = 1 - pi_within/pi_among
 
