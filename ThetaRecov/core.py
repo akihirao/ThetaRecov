@@ -297,7 +297,7 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     diff_among = 0
 
     # (i, j) の組み合わせを全て列挙 (i < j のみ)
-    for i, j in combinations(range(ggt_matrix_n_2_m.shape[0]), 2):
+    for i, j in combinations(range(gt_matrix_n_2_m.shape[0]), 2):
         # 4つのペアの絶対差を求める
         diff_11 = np.abs(gt_matrix_n_2_m[i, 0] - gt_matrix_n_2_m[j, 0])  # (iの1行目, jの1行目)
         diff_12 = np.abs(gt_matrix_n_2_m[i, 0] - gt_matrix_n_2_m[j, 1])  # (iの1行目, jの2行目)
