@@ -17,7 +17,7 @@ def main():
     Returns:
         pandas data frame of estimated parameters 
     """
-    parser = argparse.ArgumentParser(description="Compute theta and Tajima's D in sliding windows.\nChromosome: chromosome or scaffold\nWindwos_Start: Window start position\nBases: bases sequenced\nS: number of seqregating sites\nTheta_Watterson: Watterson's theta\nTheta pi\nTajima_D: Tajima's D")
+    parser = argparse.ArgumentParser(description="Compute the deviance frow H-W equibrium")
     parser._action_groups.pop()
     required = parser.add_argument_group('required arguments')
     optional = parser.add_argument_group('optional arguments')
