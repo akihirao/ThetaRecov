@@ -12,6 +12,7 @@ setup(
 		'console_scripts':[
 			'tajimaD_windows=ThetaRecov.cli_windows:main',
 			'tajimaD_overall=ThetaRecov.cli_overall:main',
+			'pi_inbreed=ThetaRecov.pi_inbreed:main',
 		],
 	},
 	description="A package for correct computation of theta and Tajima's D under missing data",

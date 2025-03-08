@@ -1,7 +1,9 @@
 import numpy as np
 import pandas as pd
-from cyvcf2 import VCF
 
+from itertools import combinations
+
+from cyvcf2 import VCF
 
 #=======================================
 def vcf2gt_matrix(input_vcf_file):
@@ -258,6 +260,61 @@ def calc_tajimaD_overall(vcf_path, output_csv = "tajimaD_overall.csv"):
     tajimaD_overall_results.append([base_sequenced,S,num_seq,effective_num_seq,theta_w_region,theta_pi_region,tajima_D])
 
     df = pd.DataFrame(tajimaD_overall_results, columns=["Bases","S","N_seq","Ne_seq","Theta_Watterson","Theta_Pi","Tajima_D"])
+    df.to_csv(output_csv, sep=",", index=False)
+    
+    return df
+
+
+
+
+#==========================================================================
+def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
+    """
+    calculation of Tajima's D based on overall sequenced sites in a vcf file
+    Parameters:
+        vcf_path: path of a vcf file
+        output_csv: an ouput file name (defualt: "inbreed.csv")
+    Returns:
+        a csv file contains positons and estimates as follows: pi_within, pi_among, homo_deviance
+    
+    """
+
+    inbreed_results = []
+    
+    gt_matrix = vcf2gt_matrix(vcf_path)
+
+    if np.isnan(gt_matrix).any():
+        warnings.warn("Missing genotypes must be imputed!")
+
+    base_sequenced = gt_matrix.shape[1]
+    gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
+
+    num_indiv = gt_matrix_n_2_m.shape[0]
+    
+    pi_within = np.sum(np.abs(gt_matrix_n_2_m[:, 0, :] - gt_matrix_n_2_m[:, 1, :]))/num_indiv/base_sequenced
+
+
+    diff_among = 0
+
+    # (i, j) の組み合わせを全て列挙 (i < j のみ)
+    for i, j in combinations(range(ggt_matrix_n_2_m.shape[0]), 2):
+        # 4つのペアの絶対差を求める
+        diff_11 = np.abs(gt_matrix_n_2_m[i, 0] - gt_matrix_n_2_m[j, 0])  # (iの1行目, jの1行目)
+        diff_12 = np.abs(gt_matrix_n_2_m[i, 0] - gt_matrix_n_2_m[j, 1])  # (iの1行目, jの2行目)
+        diff_21 = np.abs(gt_matrix_n_2_m[i, 1] - gt_matrix_n_2_m[j, 0])  # (iの2行目, jの1行目)
+        diff_22 = np.abs(gt_matrix_n_2_m[i, 1] - gt_matrix_n_2_m[j, 1])  # (iの2行目, jの2行目)
+
+        # 4ペア分の総和を計算
+        diff_among += np.sum(diff_11) + np.sum(diff_12) + np.sum(diff_21) + np.sum(diff_22)
+
+
+    pi_among = diff_among/4/num_indiv/base_sequenced
+
+    homo_deviance = 1 - pi_within/pi_among
+
+    inbreed_results.append([pi_within,pi_among,homo_deviance])
+
+    df = pd.DataFrame(inbreed_results, columns=["pi_within","pi_among","homo_deviance"])
     df.to_csv(output_csv, sep=",", index=False)
     
     return df
