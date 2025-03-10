@@ -10,7 +10,7 @@ from ThetaRecov.core import calc_inbreed
 
 def main():
     """
-    Computation and output of parameters, theta and Tajima's D, in sliding windows
+    Computation and output of pi_within, pi_among, and 1 - pi_within/pi_among as the deviation from Hardy-Weinberg equilibrium
     Parameters:
         input_vcf: path of a input VCF/VCF.gz file
         output_csv: name of an output csv file
