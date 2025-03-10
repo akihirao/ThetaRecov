@@ -347,3 +347,5 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     df.to_csv(output_csv, sep=",", index=False)
     
     return df
+
+
