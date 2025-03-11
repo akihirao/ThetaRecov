@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import pandas as pd
 
@@ -36,9 +38,9 @@ def vcf2gt_matrix(input_vcf_file):
     gt_matrix = np.array(gt_matrix).T
        
     #if the source vcf file includes missing genotypes, substitute "nan".
-    if np.isnan(gt_matrix).any():
+    if np.any(gt_matrix == -1):
         gt_matrix = np.where(gt_matrix == -1, np.nan, gt_matrix)
-        warnings.warn("The input vcf includes missing genotypes.")
+        #warnings.warn("The input vcf includes missing genotypes.")
     
     return gt_matrix
 
@@ -284,9 +286,6 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     inbreed_results = []
     
     gt_matrix = vcf2gt_matrix(vcf_path)
-
-    #if np.isnan(gt_matrix).any():
-    #    warnings.warn("Missing genotypes must be imputed!")
 
     base_sequenced = gt_matrix.shape[1]
     gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
