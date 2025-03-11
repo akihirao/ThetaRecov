@@ -291,6 +291,8 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     base_sequenced = gt_matrix.shape[1]
     gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
 
+    num_indiv = gt_matrix_n_2_m.shape[0]
+    
     diff_within = 0
     count_within = 0
     for i in range(num_indiv):

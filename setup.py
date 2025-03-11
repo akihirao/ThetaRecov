@@ -5,7 +5,7 @@ def requirements_from_file(file_name):
 
 setup(
 	names="ThetaRecov",
-	version="0.0.9",
+	version="0.0.10",
 	packages=find_packages(),
 	install_requires=requirements_from_file('requirements.txt'),
 	entry_points={
