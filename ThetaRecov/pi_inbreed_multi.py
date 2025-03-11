@@ -46,8 +46,10 @@ def main():
     
     pairs = list(combinations(range(num_samples), 2))
 
-    with Pool(4) as pool:
-        result_within =  pool.map(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, IN_VCF), i_series)
+    result_within = []
+
+    for i in range(num_samples):
+        result_within.append(ThetaRecov.core.calc_pi_within_elements_indiv_i(IN_VCF, i))
     diff_count_within = np.array(result_within).sum(axis=0)
 
     with Pool(4) as pool:
