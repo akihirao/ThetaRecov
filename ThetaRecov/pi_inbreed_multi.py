@@ -62,7 +62,7 @@ def main():
     #df = pd.DataFrame(results, columns=["pi_overall","pi_within","pi_among","homo_deviance"])
     #df.to_csv(args.output_csv, sep=",", index=False)
     
-    results.append([ppi_within])
+    results.append([pi_within])
     df = pd.DataFrame(results, columns=["pi_within"])
     df.to_csv(args.output_csv, sep=",", index=False)
     
