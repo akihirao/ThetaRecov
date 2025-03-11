@@ -5,7 +5,7 @@ def requirements_from_file(file_name):
 
 setup(
 	names="ThetaRecov",
-	version="0.0.13",
+	version="0.0.14",
 	packages=find_packages(),
 	install_requires=requirements_from_file('requirements.txt'),
 	entry_points={
@@ -13,6 +13,7 @@ setup(
 			'tajimaD_windows=ThetaRecov.cli_windows:main',
 			'tajimaD_overall=ThetaRecov.cli_overall:main',
 			'pi_inbreed=ThetaRecov.pi_inbreed:main',
+			'pi_inbreed_multi=ThetaRecov.pi_inbreed_multi:main',
 		],
 	},
 	description="A package for correct computation of theta and Tajima's D under missing data",
