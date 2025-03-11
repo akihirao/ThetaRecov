@@ -5,6 +5,7 @@ import pandas as pd
 
 from itertools import combinations
 from multiprocessing import Pool
+from functools import partial
 
 from cyvcf2 import VCF
 
