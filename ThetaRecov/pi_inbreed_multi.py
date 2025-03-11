@@ -33,7 +33,7 @@ def main():
     
     args = parser.parse_args()
 
-    result = []
+    results = []
 
     IN_VCF = args.input_vcf
     vcf_reader = VCF(IN_VCF)
