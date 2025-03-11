@@ -50,8 +50,8 @@ def main():
         result_within =  pool.map(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, IN_VCF), i_series)
         #result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs)
     
-    diff_count_within = np.array(result_within).sum(axix=0)
-    #diff_count_among = np.array(result_among).sum(axix=0)
+    diff_count_within = np.array(result_within).sum(axis=0)
+    #diff_count_among = np.array(result_among).sum(axis=0)
 
     #pi_overall = (diff_count_within[0] + diff_count_among[0])/(diff_count_within[1] + diff_count_among[1])
     pi_within = diff_count_within[0]/diff_count_within[1]
