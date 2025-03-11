@@ -42,7 +42,7 @@ def main():
 
     i_series = list(range(num_samples))
     
-    pairs = list(combinations(range(num_samples, 2)))
+    pairs = list(combinations(range(num_samples), 2))
 
     with Pool(4) as pool:
         result_within =  pool.map(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, vcf_path=args.input_vcf), i_series)
