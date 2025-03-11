@@ -311,7 +311,7 @@ def calc_pi_within_elements_indiv_i(vcf_path, i):
 
 
 
-def calc_pi_among_elements_indiv_ij(vcf_path, i, j):
+def calc_pi_among_elements_indiv_ij(vcf_path, pair):
     """
     Computation of pi_within, pi_among, and 1 - pi_within/pi_among as the deviation from Hardy-Weinberg equilibrium
     Parameters:
@@ -320,7 +320,8 @@ def calc_pi_among_elements_indiv_ij(vcf_path, i, j):
     Returns:
         diff_among, count_among
     """
-
+    i = pair[0]
+    j = pair[1]
     gt_matrix = vcf2gt_matrix(vcf_path)
 
     base_sequenced = gt_matrix.shape[1]
