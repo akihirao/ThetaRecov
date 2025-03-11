@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 from itertools import combinations
+from multiprocessing import Pool
 
 from cyvcf2 import VCF
 
@@ -267,6 +268,105 @@ def calc_tajimaD_overall(vcf_path, output_csv = "tajimaD_overall.csv"):
     df.to_csv(output_csv, sep=",", index=False)
     
     return df
+
+
+
+
+def calc_pi_within_elements_indiv_i(vcf_path, i):
+    """
+    Computation of pi_within, pi_among, and 1 - pi_within/pi_among as the deviation from Hardy-Weinberg equilibrium
+    Parameters:
+        vcf_path: path of a vcf file
+        output_csv: an ouput file name (defualt: "inbreed.csv")
+    Returns:
+        diff_within, count_within
+    """
+
+    gt_matrix = vcf2gt_matrix(vcf_path)
+
+    base_sequenced = gt_matrix.shape[1]
+    gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
+
+    num_indiv = gt_matrix_n_2_m.shape[0]
+    
+
+    gt_matrix = vcf2gt_matrix(vcf_path)
+
+    base_sequenced = gt_matrix.shape[1]
+    gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
+
+    num_indiv = gt_matrix_n_2_m.shape[0]
+    
+    diff_within = 0
+    count_within = 0
+
+    target_indiv_gt_matrix = gt_matrix_n_2_m[i]
+    mask = ~np.isnan(target_indiv_gt_matrix).any(axis=0)
+    target_indiv_gt_matrix_non_nan = target_indiv_gt_matrix[:, mask]
+    diff_within += np.sum(np.abs(np.diff(target_indiv_gt_matrix_non_nan, axis=0)))
+    count_within += target_indiv_gt_matrix_non_nan.shape[1]
+
+    return diff_within, count_within
+
+
+
+
+def calc_pi_among_elements_indiv_ij(vcf_path, i, j):
+    """
+    Computation of pi_within, pi_among, and 1 - pi_within/pi_among as the deviation from Hardy-Weinberg equilibrium
+    Parameters:
+        vcf_path: path of a vcf file
+        output_csv: an ouput file name (defualt: "inbreed.csv")
+    Returns:
+        diff_among, count_among
+    """
+
+    gt_matrix = vcf2gt_matrix(vcf_path)
+
+    base_sequenced = gt_matrix.shape[1]
+    gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
+
+    num_indiv = gt_matrix_n_2_m.shape[0]
+    
+
+    gt_matrix = vcf2gt_matrix(vcf_path)
+
+    base_sequenced = gt_matrix.shape[1]
+    gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
+
+    num_indiv = gt_matrix_n_2_m.shape[0]
+    
+    diff_among = 0
+    count_among = 0
+    
+    # 4つのペアの絶対差を求める
+    diff_11_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 0,:])) # (iの1行目, jの1行目)
+    diff_11_mask = ~np.isnan(diff_11_indiv_gt_matrix).any(axis=0)
+    diff_11_indiv_gt_matrix_non_nan = diff_11_indiv_gt_matrix[:, diff_11_mask]
+    diff_among += np.sum(np.abs(np.diff(diff_11_indiv_gt_matrix_non_nan, axis=0)))
+    count_among += diff_11_indiv_gt_matrix_non_nan.shape[1]
+
+    diff_12_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
+    diff_12_mask = ~np.isnan(diff_12_indiv_gt_matrix).any(axis=0)
+    diff_12_indiv_gt_matrix_non_nan = diff_12_indiv_gt_matrix[:, diff_12_mask]
+    diff_among += np.sum(np.abs(np.diff(diff_12_indiv_gt_matrix_non_nan, axis=0)))
+    count_among += diff_12_indiv_gt_matrix_non_nan.shape[1]
+
+    diff_21_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 0, :])) # (iの1行目, jの1行目)
+    diff_21_mask = ~np.isnan(diff_21_indiv_gt_matrix).any(axis=0)
+    diff_21_indiv_gt_matrix_non_nan = diff_21_indiv_gt_matrix[:, diff_21_mask]
+    diff_among += np.sum(np.abs(np.diff(diff_21_indiv_gt_matrix_non_nan, axis=0)))
+    count_among += diff_21_indiv_gt_matrix_non_nan.shape[1]
+
+    diff_22_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
+    diff_22_mask = ~np.isnan(diff_22_indiv_gt_matrix).any(axis=0)
+    diff_22_indiv_gt_matrix_non_nan = diff_22_indiv_gt_matrix[:, diff_22_mask]
+    diff_among += np.sum(np.abs(np.diff(diff_22_indiv_gt_matrix_non_nan, axis=0)))
+    count_among += diff_22_indiv_gt_matrix_non_nan.shape[1]
+
+    return diff_among, count_among
+
+
 
 
 
