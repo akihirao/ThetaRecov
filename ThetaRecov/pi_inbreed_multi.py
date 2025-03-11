@@ -35,7 +35,8 @@ def main():
 
     result = []
 
-    vcf_reader = VCF(args.input_vcf)
+    IN_VCF = args.input_vcf
+    vcf_reader = VCF(IN_VCF)
 
     L = vcf_reader.seqlens[0] #length of sequences
     samples = vcf_reader.samples #list of samples
@@ -46,8 +47,8 @@ def main():
     pairs = list(combinations(range(num_samples), 2))
 
     with Pool(4) as pool:
-        result_within =  pool.map(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, args.input_vcf), i_series)
-        result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, args.input_vcf), pairs)
+        result_within =  pool.map(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, IN_VCF), i_series)
+        result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs)
     
     diff_count_within = np.array(result_within).sum(axix=0)
     diff_count_among = np.array(result_among).sum(axix=0)
