@@ -37,41 +37,36 @@ def main():
     results = []
 
     IN_VCF = args.input_vcf
-    vcf_reader = VCF(IN_VCF)
-
+    OUT_CSV = args.output_csv
     num_threads = args.threads
 
-    L = vcf_reader.seqlens[0] #length of sequences
-    samples = vcf_reader.samples #list of samples
-    num_samples = len(samples)
+
+    #vcf_reader = VCF(IN_VCF)
+
+    gt_matrix = vcf2gt_matrix(IN_VCF) #matrix of 2n samples by m loci 
+
+
+    #L = vcf_reader.seqlens[0] #length of sequences
+    #samples = vcf_reader.samples #list of samples
+    num_samples = gt_matrix.shape[0] / 2
 
     i_series = list(range(num_samples))
     
     pairs = list(combinations(range(num_samples), 2))
 
-    #print(f"Number of sample pairs: {len(pairs)}") # check how much pairs
-    #result_within = []
-
-    #for i in range(num_samples):
-    #    #print(f"Processing individual {i}")# for debug
-    #    result_within.append(ThetaRecov.core.calc_pi_within_elements_indiv_i(IN_VCF, i))
-    #diff_count_within = np.array(result_within).sum(axis=0)
-
+    
     with Pool(num_threads) as pool:
         result_within = []
-        for res_within in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, IN_VCF), i_series):
+        for res_within in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, gt_matrix), i_series):
             result_within.append(res_within)
 
         result_among = []
-        for res_among in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs):
+        for res_among in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, gt_matrix), pairs):
             result_among.append(res_among)
-            #result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs[:20])
-            #result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs)
     
     diff_count_within = np.array(result_within).sum(axis=0)
     diff_count_among = np.array(result_among).sum(axis=0)
 
-    #print(f"diff_count_within: {diff_count_within}") #for debug
     print(f"diff_count_among: {diff_count_among}") #for debug
 
     pi_overall = (diff_count_within[0] + diff_count_among[0])/(diff_count_within[1] + diff_count_among[1])
@@ -81,11 +76,7 @@ def main():
 
     results.append([pi_overall,pi_within,pi_among,homo_deviance])
     df = pd.DataFrame(results, columns=["pi_overall","pi_within","pi_among","homo_deviance"])
-    df.to_csv(args.output_csv, sep=",", index=False)
-    
-    #results.append([pi_within])
-    #df = pd.DataFrame(results, columns=["pi_within"])
-    #df.to_csv(args.output_csv, sep=",", index=False)
+    df.to_csv(OUT_CSV, sep=",", index=False)
     
 
 if __name__ == "__main__":
