@@ -48,7 +48,7 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
 
     shm.close() #メモリを閉じる
 
-    return list(diff_within, count_within)
+    return diff_within, count_within
 
 
 
@@ -113,6 +113,8 @@ def main():
     
     diff_count_within = np.array(result_within).sum(axis=0)
     #diff_count_among = np.array(result_among).sum(axis=0)
+    print(f"result_within: {result_within}") #for debug
+    print(f"diff_count_within: {diff_count_within}") #for debug
 
     #print(f"diff_count_among: {diff_count_among}") #for debug
 
