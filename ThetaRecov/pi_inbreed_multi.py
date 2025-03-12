@@ -49,7 +49,7 @@ def main():
 
     #L = vcf_reader.seqlens[0] #length of sequences
     #samples = vcf_reader.samples #list of samples
-    num_samples = gt_matrix.shape[0] / 2
+    num_samples = int(gt_matrix.shape[0] / 2)
 
     i_series = list(range(num_samples))
     
