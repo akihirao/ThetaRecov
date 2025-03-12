@@ -47,6 +47,7 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
     count_within = target_indiv_matrix_non_nan.shape[1]
 
     shm.close() #メモリを閉じる
+    
     return diff_within, count_within
 
 
@@ -126,6 +127,9 @@ def main():
     #results.append([pi_overall,pi_within,pi_among,homo_deviance])
     #df = pd.DataFrame(results, columns=["pi_overall","pi_within","pi_among","homo_deviance"])
     #df.to_csv(OUT_CSV, sep=",", index=False)
+
+    shm.close()
+    shm.unlink()
     
 if __name__ == "__main__":
     main()
