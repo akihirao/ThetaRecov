@@ -93,7 +93,7 @@ def main():
     shm = shared_memory.SharedMemory(create=True, size = gt_matrix.nbytes)
 
     #共有メモリをndarry配列にリンク
-    shared＿array = np.ndarray(gt_matrix.shape, dtype=gt_matrix.dtype, buffer=shm.buf)
+    shared_array = np.ndarray(gt_matrix.shape, dtype=gt_matrix.dtype, buffer=shm.buf)
     shared_array = gt_matrix[:] #データをコピー
 
     #L = vcf_reader.seqlens[0] #length of sequences
