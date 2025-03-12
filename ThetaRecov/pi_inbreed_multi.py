@@ -34,7 +34,7 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
     shm = shared_memory.SharedMemory(name=name)
     matrix = np.ndarray(shape, dtype=dtype, buffer=shm.buf)
 
-    matrix_n_2_m = matrix.reshape(-1,2,gt_matrix.shape[1])
+    matrix_n_2_m = matrix.reshape(-1,2,matrix.shape[1])
     num_indiv = matrix_n_2_m.shape[0]
     
     diff_within = 0
