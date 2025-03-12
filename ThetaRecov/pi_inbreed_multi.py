@@ -47,8 +47,8 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
     count_within = target_indiv_matrix_non_nan.shape[1]
 
     shm.close() #メモリを閉じる
-    
-    return diff_within, count_within
+
+    return list(diff_within, count_within)
 
 
 
@@ -97,6 +97,7 @@ def main():
 
     i_series = list(range(num_samples))
     
+    print(i_series)
     pairs = list(combinations(range(num_samples), 2))
 
     
