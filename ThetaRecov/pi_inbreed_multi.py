@@ -47,7 +47,7 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
     target_indiv_matrix = matrix_n_2_m[index]
     mask = ~np.isnan(target_indiv_matrix).any(axis=0)
     filtered_target_indiv_matrix = target_indiv_matrix[:, mask]
-
+    print(filtered_target_indiv_matrix.dtype)#
     diff_within = np.sum(np.abs(np.diff(filtered_target_indiv_matrix, axis=0)))
     count_within = filtered_target_indiv_matrix.shape[1]
 
@@ -116,21 +116,23 @@ def main():
         #for res_among in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, gt_matrix), pairs):
         #    result_among.append(res_among)
     
-    diff_count_within = np.array(zip(*result_within)).sum(axis=0)
+    diff_within, count_within = zip(*result_within)
+
+    #diff_count_within = np.array(zip(*result_within)).sum(axis=0)
     #diff_count_among = np.array(result_among).sum(axis=0)
-    print(f"result_within: {result_within}") #for debug
-    print(f"diff_count_within: {diff_count_within}") #for debug
+    print(f"diff_within: {diff_within}") #for debug
+    print(f"count_within: {count_within}") #for debug
 
     #print(f"diff_count_among: {diff_count_among}") #for debug
 
     #pi_overall = (diff_count_within[0] + diff_count_among[0])/(diff_count_within[1] + diff_count_among[1])
-    pi_within = diff_count_within[0]/diff_count_within[1]
+    #pi_within = diff_count_within[0]/diff_count_within[1]
     #pi_among = diff_count_among[0]/diff_count_among[1]
     #homo_deviance = 1 - pi_within/pi_among
 
-    results.append([pi_within])
-    df = pd.DataFrame(results, columns=["pi_within"])
-    df.to_csv(OUT_CSV, sep=",", index=False)
+    #results.append([pi_within])
+    #df = pd.DataFrame(results, columns=["pi_within"])
+    #df.to_csv(OUT_CSV, sep=",", index=False)
     
     #results.append([pi_overall,pi_within,pi_among,homo_deviance])
     #df = pd.DataFrame(results, columns=["pi_overall","pi_within","pi_among","homo_deviance"])
