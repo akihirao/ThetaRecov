@@ -344,26 +344,29 @@ def calc_pi_among_elements_indiv_ij(vcf_path, pair):
     diff_11_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 0,:])) # (iの1行目, jの1行目)
     diff_11_mask = ~np.isnan(diff_11_indiv_gt_matrix).any(axis=0)
     diff_11_indiv_gt_matrix_non_nan = diff_11_indiv_gt_matrix[:, diff_11_mask]
-    diff_among += np.sum(np.abs(np.diff(diff_11_indiv_gt_matrix_non_nan, axis=0)))
-    count_among += diff_11_indiv_gt_matrix_non_nan.shape[1]
+    diff_11_among = np.sum(np.abs(np.diff(diff_11_indiv_gt_matrix_non_nan, axis=0)))
+    count_11_among = diff_11_indiv_gt_matrix_non_nan.shape[1]
 
     diff_12_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
     diff_12_mask = ~np.isnan(diff_12_indiv_gt_matrix).any(axis=0)
     diff_12_indiv_gt_matrix_non_nan = diff_12_indiv_gt_matrix[:, diff_12_mask]
-    diff_among += np.sum(np.abs(np.diff(diff_12_indiv_gt_matrix_non_nan, axis=0)))
-    count_among += diff_12_indiv_gt_matrix_non_nan.shape[1]
+    diff_12_among = np.sum(np.abs(np.diff(diff_12_indiv_gt_matrix_non_nan, axis=0)))
+    count_12_among = diff_12_indiv_gt_matrix_non_nan.shape[1]
 
     diff_21_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 0, :])) # (iの1行目, jの1行目)
     diff_21_mask = ~np.isnan(diff_21_indiv_gt_matrix).any(axis=0)
     diff_21_indiv_gt_matrix_non_nan = diff_21_indiv_gt_matrix[:, diff_21_mask]
-    diff_among += np.sum(np.abs(np.diff(diff_21_indiv_gt_matrix_non_nan, axis=0)))
-    count_among += diff_21_indiv_gt_matrix_non_nan.shape[1]
+    diff_21_among = np.sum(np.abs(np.diff(diff_21_indiv_gt_matrix_non_nan, axis=0)))
+    count_21_among = diff_21_indiv_gt_matrix_non_nan.shape[1]
 
     diff_22_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
     diff_22_mask = ~np.isnan(diff_22_indiv_gt_matrix).any(axis=0)
     diff_22_indiv_gt_matrix_non_nan = diff_22_indiv_gt_matrix[:, diff_22_mask]
-    diff_among += np.sum(np.abs(np.diff(diff_22_indiv_gt_matrix_non_nan, axis=0)))
-    count_among += diff_22_indiv_gt_matrix_non_nan.shape[1]
+    diff_22_among = np.sum(np.abs(np.diff(diff_22_indiv_gt_matrix_non_nan, axis=0)))
+    count_22_among = diff_22_indiv_gt_matrix_non_nan.shape[1]
+
+    diff_among += diff_11_among + diff_12_among + diff_21_among + diff_22_among
+    count_among += count_1_among + count_12_among + count_21_among + count_22_among 
 
     return diff_among, count_among
 
