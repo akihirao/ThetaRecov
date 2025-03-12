@@ -44,7 +44,7 @@ def main():
 
     #vcf_reader = VCF(IN_VCF)
 
-    gt_matrix = vcf2gt_matrix(IN_VCF) #matrix of 2n samples by m loci 
+    gt_matrix = ThetaRecov.core.vcf2gt_matrix(IN_VCF) #matrix of 2n samples by m loci 
 
 
     #L = vcf_reader.seqlens[0] #length of sequences
@@ -58,11 +58,11 @@ def main():
     
     with Pool(num_threads) as pool:
         result_within = []
-        for res_within in pool.imap_unordered(partial(calc_pi_within_elements_indiv_i, gt_matrix), i_series):
+        for res_within in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, gt_matrix), i_series):
             result_within.append(res_within)
 
         result_among = []
-        for res_among in pool.imap_unordered(partial(calc_pi_among_elements_indiv_ij, gt_matrix), pairs):
+        for res_among in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, gt_matrix), pairs):
             result_among.append(res_among)
     
     diff_count_within = np.array(result_within).sum(axis=0)
