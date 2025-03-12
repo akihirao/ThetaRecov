@@ -366,7 +366,7 @@ def calc_pi_among_elements_indiv_ij(vcf_path, pair):
     count_22_among = diff_22_indiv_gt_matrix_non_nan.shape[1]
 
     diff_among += diff_11_among + diff_12_among + diff_21_among + diff_22_among
-    count_among += count_1_among + count_12_among + count_21_among + count_22_among 
+    count_among += count_11_among + count_12_among + count_21_among + count_22_among 
 
     return diff_among, count_among
 
