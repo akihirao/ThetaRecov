@@ -40,7 +40,7 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
     row_1 = matrix[2 * index + 1]
     row_2 = matrix[2 * index + 2]
 
-    target_indiv_matrix = np.vstack(row_1, row_2)
+    target_indiv_matrix = np.vstack((row_1, row_2))
     nan_mask = np.isnan(target_indiv_matrix).any(axis=0)
     filtered_target_indiv_matrix = target_indiv_matrix[~nan_mask]
 
