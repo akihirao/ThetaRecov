@@ -46,16 +46,22 @@ def main():
     
     pairs = list(combinations(range(num_samples), 2))
 
+    print(f"Number fo sample pairs: {len(pairs)}") # check how much pairs
     result_within = []
 
     for i in range(num_samples):
+        print(f"Processing individual {i}")# for debug
         result_within.append(ThetaRecov.core.calc_pi_within_elements_indiv_i(IN_VCF, i))
     diff_count_within = np.array(result_within).sum(axis=0)
 
     with Pool(4) as pool:
-        result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs)
+        result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs[:20])
+        #result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs)
     diff_count_among = np.array(result_among).sum(axis=0)
 
+    print(f"diff_count_within: {diff_count_within}") #for debug
+    print(f"diff_count_among: {diff_count_among}") #for debug
+    
     pi_overall = (diff_count_within[0] + diff_count_among[0])/(diff_count_within[1] + diff_count_among[1])
     pi_within = diff_count_within[0]/diff_count_within[1]
     pi_among = diff_count_among[0]/diff_count_among[1]
