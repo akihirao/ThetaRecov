@@ -53,8 +53,8 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
 
     shm.close() #メモリを閉じる
 
-    return diff_within, count_within
-
+    return count_within
+    #return diff_within, count_within
 
 
 
@@ -124,13 +124,13 @@ def main():
     #print(f"diff_count_among: {diff_count_among}") #for debug
 
     #pi_overall = (diff_count_within[0] + diff_count_among[0])/(diff_count_within[1] + diff_count_among[1])
-    pi_within = diff_count_within[0]/diff_count_within[1]
+    #pi_within = diff_count_within[0]/diff_count_within[1]
     #pi_among = diff_count_among[0]/diff_count_among[1]
     #homo_deviance = 1 - pi_within/pi_among
 
-    results.append([pi_within])
-    df = pd.DataFrame(results, columns=["pi_within"])
-    df.to_csv(OUT_CSV, sep=",", index=False)
+    #results.append([pi_within])
+    #df = pd.DataFrame(results, columns=["pi_within"])
+    #df.to_csv(OUT_CSV, sep=",", index=False)
     
     #results.append([pi_overall,pi_within,pi_among,homo_deviance])
     #df = pd.DataFrame(results, columns=["pi_overall","pi_within","pi_among","homo_deviance"])
