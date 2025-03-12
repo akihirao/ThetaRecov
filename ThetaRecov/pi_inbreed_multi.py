@@ -11,6 +11,7 @@ from cyvcf2 import VCF
 
 import ThetaRecov
 
+from ThetaRecov.core import vcf2gt_matrix
 from ThetaRecov.core import calc_pi_within_elements_indiv_i
 from ThetaRecov.core import calc_pi_among_elements_indiv_ij
 
@@ -57,11 +58,11 @@ def main():
     
     with Pool(num_threads) as pool:
         result_within = []
-        for res_within in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, gt_matrix), i_series):
+        for res_within in pool.imap_unordered(partial(calc_pi_within_elements_indiv_i, gt_matrix), i_series):
             result_within.append(res_within)
 
         result_among = []
-        for res_among in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, gt_matrix), pairs):
+        for res_among in pool.imap_unordered(partial(calc_pi_among_elements_indiv_ij, gt_matrix), pairs):
             result_among.append(res_among)
     
     diff_count_within = np.array(result_within).sum(axis=0)
