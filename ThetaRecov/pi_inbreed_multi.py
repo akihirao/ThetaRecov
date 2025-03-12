@@ -59,7 +59,7 @@ def main():
 
     with Pool(num_threads) as pool:
         result_within = []
-        for res_within in imap_unordered(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, IN_VCF), i_series):
+        for res_within in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, IN_VCF), i_series):
             result_within.append(res_within)
 
         result_among = []
