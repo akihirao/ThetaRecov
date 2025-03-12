@@ -103,7 +103,7 @@ def main():
         #result_within = []
         #for res_within in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, gt_matrix), i_series):
         #    result_within.append(res_within)
-        result_within = pool.starmap(pi_within_elements_indiv_i, [i, shm.name, gt_matrix.shape,gt_matrix.dtype) for i in i_series])
+        result_within = pool.starmap(pi_within_elements_indiv_i, [(i, shm.name, gt_matrix.shape, gt_matrix.dtype) for i in i_series])
 
         #result_among = []
         #for res_among in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, gt_matrix), pairs):
