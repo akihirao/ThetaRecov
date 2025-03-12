@@ -84,7 +84,7 @@ def main():
     gt_matrix = ThetaRecov.core.vcf2gt_matrix(IN_VCF) #matrix of 2n samples by m loci 
     
     #共有メモリを作成
-    shm = shared_memory.SharedMemory(create=True, size = data.nbytes)
+    shm = shared_memory.SharedMemory(create=True, size = gt_matrix.nbytes)
 
     #共有メモリをndarry配列にリンク
     shared＿array = np.ndarray(gt_matrix.shape, dtype=gt_matrix.dtype, buffer=shm.buf)
