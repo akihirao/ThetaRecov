@@ -34,27 +34,27 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
     shm = shared_memory.SharedMemory(name=name)
     matrix = np.ndarray(shape, dtype=dtype, buffer=shm.buf)
 
-    #matrix_n_2_m = matrix.reshape(-1,2,matrix.shape[1])
-    num_indiv = int(matrix.shape[0] / 2)
+    matrix_n_2_m = matrix.reshape(-1,2,matrix.shape[1])
+    
+    #row_1 = matrix[2 * index + 1, :]
+    #row_2 = matrix[2 * index + 2, :]
 
-    row_1 = matrix[2 * index + 1, :]
-    row_2 = matrix[2 * index + 2, :]
-
-    target_indiv_matrix = np.vstack((row_1, row_2))
-    nan_mask = np.isnan(target_indiv_matrix).any(axis=0)
-    filtered_target_indiv_matrix = target_indiv_matrix[~nan_mask]
+    #target_indiv_matrix = np.vstack((row_1, row_2))
+    #nan_mask = np.isnan(target_indiv_matrix).any(axis=0)
+    #filtered_target_indiv_matrix = target_indiv_matrix[~nan_mask]
 
 
-    #target_indiv_matrix = matrix_n_2_m[index]
-    #mask = ~np.isnan(target_indiv_matrix).any(axis=0)
-    #target_indiv_matrix_non_nan = target_indiv_matrix[:, mask]
+    target_indiv_matrix = matrix_n_2_m[index]
+    mask = ~np.isnan(target_indiv_matrix).any(axis=0)
+    filtered_target_indiv_matrix = target_indiv_matrix[:, mask]
+    
     diff_within = np.sum(np.abs(np.diff(filtered_target_indiv_matrix, axis=0)))
     count_within = filtered_target_indiv_matrix.shape[1]
 
     shm.close() #メモリを閉じる
 
-    return count_within
-    #return diff_within, count_within
+    #return count_within
+    return diff_within, count_within
 
 
 
