@@ -36,17 +36,17 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
 
     matrix_n_2_m = matrix.reshape(-1,2,matrix.shape[1])
     
-    #row_1 = matrix[2 * index + 1, :]
-    #row_2 = matrix[2 * index + 2, :]
+    row_1 = matrix[2 * index + 1, :]
+    row_2 = matrix[2 * index + 2, :]
 
-    #target_indiv_matrix = np.vstack((row_1, row_2))
-    #nan_mask = np.isnan(target_indiv_matrix).any(axis=0)
-    #filtered_target_indiv_matrix = target_indiv_matrix[~nan_mask]
+    target_indiv_matrix = np.vstack((row_1, row_2))
+    nan_mask = np.isnan(target_indiv_matrix).any(axis=0)
+    filtered_target_indiv_matrix = target_indiv_matrix[~nan_mask]
 
 
-    target_indiv_matrix = matrix_n_2_m[index]
-    mask = ~np.isnan(target_indiv_matrix).any(axis=0)
-    filtered_target_indiv_matrix = target_indiv_matrix[:, mask]
+    #target_indiv_matrix = matrix_n_2_m[index]
+    #mask = ~np.isnan(target_indiv_matrix).any(axis=0)
+    #filtered_target_indiv_matrix = target_indiv_matrix[:, mask]
     print(filtered_target_indiv_matrix.dtype)#
     diff_within = np.sum(np.abs(np.diff(filtered_target_indiv_matrix, axis=0)))
     count_within = filtered_target_indiv_matrix.shape[1]
