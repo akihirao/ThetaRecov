@@ -409,7 +409,7 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     #    diff_within += np.sum(np.abs(np.diff(target_indiv_gt_matrix_non_nan, axis=0)))
     #    count_within += target_indiv_gt_matrix_non_nan.shape[1]
 
-    #pi_within = diff_within/count_within
+    pi_within = diff_within/count_within
 
     print(f"diff_within: {diff_within}") #for debug
     print(f"count_within: {count_within}") #for debug
