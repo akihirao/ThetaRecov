@@ -286,15 +286,6 @@ def calc_pi_within_elements_indiv_i(vcf_path, i):
 
     base_sequenced = gt_matrix.shape[1]
     gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
-
-    num_indiv = gt_matrix_n_2_m.shape[0]
-    
-
-    gt_matrix = vcf2gt_matrix(vcf_path)
-
-    base_sequenced = gt_matrix.shape[1]
-    gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
-
     num_indiv = gt_matrix_n_2_m.shape[0]
     
     diff_within = 0
@@ -392,20 +383,36 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     gt_matrix = vcf2gt_matrix(vcf_path)
 
     base_sequenced = gt_matrix.shape[1]
-    gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
-
-    num_indiv = gt_matrix_n_2_m.shape[0]
     
-    diff_within = 0
-    count_within = 0
-    for i in range(num_indiv):
-        target_indiv_gt_matrix = gt_matrix_n_2_m[i]
-        mask = ~np.isnan(target_indiv_gt_matrix).any(axis=0)
-        target_indiv_gt_matrix_non_nan = target_indiv_gt_matrix[:, mask]
-        diff_within += np.sum(np.abs(np.diff(target_indiv_gt_matrix_non_nan, axis=0)))
-        count_within += target_indiv_gt_matrix_non_nan.shape[1]
+    even_rows = gt_matrix[::2, :]
+    odd_rows = gt_matrix[1::2, :]
 
-    pi_within = diff_within/count_within
+    #mask for cols with nan
+    valid_mask = ~np.isnan(even_rows) & =np.isnan(odd_rows)
+
+    abs_diff = np.abs(even_rows - odd_rows)
+    ads_diff[~valid_mask] = 0
+
+    diff_within = abs_diff.sum(axis = 1)
+    count_within = valid_mask.sum(axis = 1)
+
+    #gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
+
+    #num_indiv = gt_matrix_n_2_m.shape[0]
+    
+    #diff_within = 0
+    #count_within = 0
+    #for i in range(num_indiv):
+    #    target_indiv_gt_matrix = gt_matrix_n_2_m[i]
+    #    mask = ~np.isnan(target_indiv_gt_matrix).any(axis=0)
+    #    target_indiv_gt_matrix_non_nan = target_indiv_gt_matrix[:, mask]
+    #    diff_within += np.sum(np.abs(np.diff(target_indiv_gt_matrix_non_nan, axis=0)))
+    #    count_within += target_indiv_gt_matrix_non_nan.shape[1]
+
+    #pi_within = diff_within/count_within
+
+    print(f"diff_within: {diff_within}") #for debug
+    print(f"count_within: {count_within}") #for debug
 
     diff_among = 0
     count_among = 0
