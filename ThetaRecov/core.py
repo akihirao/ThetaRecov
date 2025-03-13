@@ -458,7 +458,7 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     #df.to_csv(output_csv, sep=",", index=False)
     
 
-    inbreed_results.append([ppi_within])
+    inbreed_results.append([pi_within])
 
     df = pd.DataFrame(inbreed_results, columns=["pi_within"])
     df.to_csv(output_csv, sep=",", index=False)
