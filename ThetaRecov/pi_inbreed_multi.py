@@ -99,7 +99,7 @@ def main():
 
 
     global gt_matrix_shm
-    global gt matrix
+    global gt_matrix
 
     gt_matrix = vcf2gt_matrix(IN_VCF)
     
