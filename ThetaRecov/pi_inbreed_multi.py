@@ -42,6 +42,8 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
     target_indiv_matrix = np.vstack((row_1, row_2))
     nan_mask = np.isnan(target_indiv_matrix).any(axis=0)
     filtered_target_indiv_matrix = target_indiv_matrix[~nan_mask]
+    print(matrix.dtype)
+    print(np.sum(matrix))
 
 
     #target_indiv_matrix = matrix_n_2_m[index]
