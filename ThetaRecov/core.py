@@ -363,7 +363,7 @@ def calc_pi_among_elements_indiv_ij(vcf_path, pair):
 
 
 
-
+#========================================================
 def diff_count_within(gt_matrix):
 
     even_rows = gt_matrix[::2, :]
@@ -381,8 +381,25 @@ def diff_count_within(gt_matrix):
     return diff_within, count_within
 
 
+#========================================================
+def diff_count_among(gt_matrix):
+    n,m = gt_matrix.shape
 
+    # get indices of all pairwise combinations
+    pairs_indices = np.arrat(list(combinations(range(n), 2)))
 
+    row1 = gt_matrix[pairs_indices[:,0], :]
+    row2 = gt_matrix[pairs_indices[:,1], :]
+
+    valid_mask = ~np.isnan(row1) & ~ np.isnan(row2)
+
+    abs_diff = np.abs(row - row2)
+    abs_diff[~valid_mask] = 0
+
+    diff_among = np.sum(abs_diff, axis = 1)
+    count_among = np.sum(valid_mask, axis = 1)
+
+    return diff_among, count_among
 
 
 
@@ -413,13 +430,15 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
 
     diff_among = 0
     count_among = 0
-    num_diff_comb = num_indiv * (num_indiv - 1) // 2
-
+    
 
     for i in range(gt_matrix.shape[0]):
         gt_matrix_clipped = np.delete(gt_matrix,i, axis = 0)
+        diff_among_indiv, count_among_indiv = diff_count_among(gt_matrix_clipped)
+        diff_among += diff_among_indiv
+        count_among += count_among_indiv
 
-
+    #num_diff_comb = num_indiv * (num_indiv - 1) // 2
     # (i, j) の組み合わせを全て列挙 (i < j のみ)
     #for i, j in combinations(range(gt_matrix_n_2_m.shape[0]), 2):
     #    # 4つのペアの絶対差を求める
@@ -447,21 +466,21 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
         # diff_among += np.sum(np.abs(np.diff(diff_22_indiv_gt_matrix_non_nan, axis=0)))
         # count_among += diff_22_indiv_gt_matrix_non_nan.shape[1]
 
-    #pi_among = diff_among/count_among
+    pi_among = diff_among/count_among
 
-    #homo_deviance = 1 - pi_within/pi_among
+    homo_deviance = 1 - pi_within/pi_among
 
-    #pi_overall = (diff_within + diff_among)/(count_within + count_among)
-    #inbreed_results.append([pi_overall,pi_within,pi_among,homo_deviance])
+    pi_overall = (diff_within + diff_among)/(count_within + count_among)
+    inbreed_results.append([pi_overall,pi_within,pi_among,homo_deviance])
 
-    #df = pd.DataFrame(inbreed_results, columns=["pi_overall","pi_within","pi_among","homo_deviance"])
-    #df.to_csv(output_csv, sep=",", index=False)
+    df = pd.DataFrame(inbreed_results, columns=["pi_overall","pi_within","pi_among","homo_deviance"])
+    df.to_csv(output_csv, sep=",", index=False)
     
 
-    inbreed_results.append([pi_within])
+    #inbreed_results.append([pi_within])
 
-    df = pd.DataFrame(inbreed_results, columns=["pi_within"])
-    df.to_csv(output_csv, sep=",", index=False)
+    #df = pd.DataFrame(inbreed_results, columns=["pi_within"])
+    #df.to_csv(output_csv, sep=",", index=False)
     
 
 
