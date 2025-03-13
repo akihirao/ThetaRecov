@@ -5,6 +5,7 @@ import pandas as pd
 
 from itertools import combinations
 from multiprocessing import Pool
+from multiprocessing import shared_memory
 from functools import partial
 
 from cyvcf2 import VCF
@@ -15,6 +16,58 @@ from ThetaRecov.core import vcf2gt_matrix
 from ThetaRecov.core import diff_count_within
 from ThetaRecov.core import calc_pi_within_elements_indiv_i
 from ThetaRecov.core import calc_pi_among_elements_indiv_ij
+
+
+def init_shared_memory(matrix):
+    """共有メモリを作成し、行列をコピーする"""
+    global gt_matrix_shm, gt_matrix_shape, gt_matrix_dtype # global variables
+    gt_matrix_shape = matrix.shape
+    gt_matrix_shared = shared_memory.SharedMemory(create = True, size = matrix.nbytes)
+    gt_matrix = np.ndarry(gt_matrix_shape, dtype=matrix.dtype, buffer = gt_matrix_shared.buf)
+    np.copyto(gt_matrix, matrix)
+    gt_matrix_shm = gt_matrix_shared # keep name
+    return gt_matrix_shared.name
+
+
+def cleanup_shared_memoty():
+    """共有メモリを開放"""
+    global gt_matrix_shared
+    gt_matrix_shared.close()
+    gt_matrix_shared.unlink()
+
+def init_process(name, shape, dtype):
+     """ワーカープロセスが共有メモリにアクセスできるようにする"""
+     global gt_matrix
+     gt_matrix_shm = shared_memory.SharedMemory(name=name)
+     gt_matrix = np.ndarray(shape=shape, dtype=dtype, buffer=gt_matrix_shm.buf)
+
+
+
+#========================================================
+def diff_count_among_clipped(index):
+    """共有メモリを開き、対応する行を処理"""
+    global gt_matrix
+
+    gt_matrix_clipped = np.delete(gt_matrix,i, axis = 0)
+
+    n,m = gt_matrix_clipped.shape
+
+    # get indices of all pairwise combinations
+    pairs_indices = np.array(list(combinations(range(n), 2)))
+
+    row1 = gt_matrix_clipped[pairs_indices[:,0], :]
+    row2 = gt_matrix_clipped[pairs_indices[:,1], :]
+
+    valid_mask = ~np.isnan(row1) & ~ np.isnan(row2)
+
+    abs_diff = np.abs(row1 - row2)
+    abs_diff[~valid_mask] = 0
+
+    diff_among = np.sum(abs_diff)
+    count_among = np.sum(valid_mask)
+
+    return diff_among, count_among
+
 
 def main():
     """
@@ -36,8 +89,7 @@ def main():
    
     args = parser.parse_args()
 
-    
-
+ 
     IN_VCF = args.input_vcf
     OUT_CSV = args.output_csv
     num_threads = args.threads
@@ -46,18 +98,13 @@ def main():
 
     gt_matrix = vcf2gt_matrix(IN_VCF)
     
-
-    #vcf_reader = VCF(IN_VCF)
-
-    
     L = gt_matrix.shape[1] #length of sequences
-    #samples = vcf_reader.samples #list of samples
-    num_indiv = int(gt_matrix.shape[0] / 2)
 
+    num_indiv = int(gt_matrix.shape[0] / 2)
     i_series = list(range(num_indiv))
-    
     pairs = list(combinations(range(num_indiv), 2))
 
+    shm_name = init_shared_memory()
     
     result_within = []
 
@@ -67,14 +114,21 @@ def main():
 
     print(f"Number fo sample pairs: {len(pairs)}") # check how much pairs
     print("processing count among individuals")
-    with Pool(num_threads) as pool:
-        #result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs[:20])
-        result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs)
-    diff_count_among = np.array(result_among).sum(axis=0)
 
-    #print(f"diff_count_within: {diff_count_within}") #for debug
-    print(f"diff_count_among: {diff_count_among}") #for debug
+    try:
+        with Pool(processes=num_threads, initializer=init_process, initargs=(gt_matrix_shm.name, gt_matrix.shape,gt_matrix.dtype)) as pool:
+            result_among = pool.starmap(diff_count_among_clipped, [(idx, gt_matrix_shm.name,gt_matrix.shape,gt_matrix.dtype) for idx in i_series])
+            #result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs[:20])
+            #result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs)
+        diff_count_among = np.array(result_among).sum(axis=0)
 
+        print(f"diff_count_among: {diff_count_among}") #for debug
+    
+    finally:
+        gt_matrix_shm.close()
+        gt_matrix.unlink()
+
+    
     pi_overall = (diff_within + diff_count_among[0])/(count_within + diff_count_among[1])
     pi_within = diff_within/count_within
     pi_among = diff_count_among[0]/diff_count_among[1]
