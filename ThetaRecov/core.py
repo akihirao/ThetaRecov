@@ -483,3 +483,74 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     return df
 
 
+
+#==========================================================================
+def calc_inbreed_pre(vcf_path, output_csv = "inbreed.csv"):
+    """
+    Computation of pi_within, pi_among, and 1 - pi_within/pi_among as the deviation from Hardy-Weinberg equilibrium
+    Parameters:
+        vcf_path: path of a vcf file
+        output_csv: an ouput file name (defualt: "inbreed.csv")
+    Returns:
+        a csv file contains positons and estimates as follows: pi_within, pi_among, homo_deviance
+    
+    """
+
+    inbreed_results = []
+    
+    gt_matrix = vcf2gt_matrix(vcf_path)
+
+    base_sequenced = gt_matrix.shape[1]
+    num_indiv = int(gt_matrix.shape[0] / 2)
+    
+    diff_within, count_within = diff_count_within(gt_matrix)
+
+    pi_within = diff_within/count_within
+
+
+    #=====================================    
+    gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
+    diff_among = 0
+    count_among = 0
+    num_diff_comb = num_indiv * (num_indiv - 1) // 2
+
+    # (i, j) の組み合わせを全て列挙 (i < j のみ)
+    for i, j in combinations(range(gt_matrix_n_2_m.shape[0]), 2):
+        # 4つのペアの絶対差を求める
+        diff_11_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 0,:])) # (iの1行目, jの1行目)
+        diff_11_mask = ~np.isnan(diff_11_indiv_gt_matrix).any(axis=0)
+        diff_11_indiv_gt_matrix_non_nan = diff_11_indiv_gt_matrix[:, diff_11_mask]
+        diff_among += np.sum(np.abs(np.diff(diff_11_indiv_gt_matrix_non_nan, axis=0)))
+        count_among += diff_11_indiv_gt_matrix_non_nan.shape[1]
+
+        diff_12_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
+        diff_12_mask = ~np.isnan(diff_12_indiv_gt_matrix).any(axis=0)
+        diff_12_indiv_gt_matrix_non_nan = diff_12_indiv_gt_matrix[:, diff_12_mask]
+        diff_among += np.sum(np.abs(np.diff(diff_12_indiv_gt_matrix_non_nan, axis=0)))
+        count_among += diff_12_indiv_gt_matrix_non_nan.shape[1]
+
+        diff_21_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 0, :])) # (iの1行目, jの1行目)
+        diff_21_mask = ~np.isnan(diff_21_indiv_gt_matrix).any(axis=0)
+        diff_21_indiv_gt_matrix_non_nan = diff_21_indiv_gt_matrix[:, diff_21_mask]
+        diff_among += np.sum(np.abs(np.diff(diff_21_indiv_gt_matrix_non_nan, axis=0)))
+        count_among += diff_21_indiv_gt_matrix_non_nan.shape[1]
+
+        diff_22_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
+        diff_22_mask = ~np.isnan(diff_22_indiv_gt_matrix).any(axis=0)
+        diff_22_indiv_gt_matrix_non_nan = diff_22_indiv_gt_matrix[:, diff_22_mask]
+        diff_among += np.sum(np.abs(np.diff(diff_22_indiv_gt_matrix_non_nan, axis=0)))
+        count_among += diff_22_indiv_gt_matrix_non_nan.shape[1]
+
+    pi_among = diff_among/count_among
+
+    homo_deviance = 1 - pi_within/pi_among
+
+    inbreed_results.append([pi_within,pi_among,homo_deviance])
+
+    df = pd.DataFrame(inbreed_results, columns=["pi_within","pi_among","homo_deviance"])
+    df.to_csv(output_csv, sep=",", index=False)
+    
+    return df
+
+
+

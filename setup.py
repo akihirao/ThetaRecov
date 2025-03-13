@@ -5,7 +5,7 @@ def requirements_from_file(file_name):
 
 setup(
 	names="ThetaRecov",
-	version="0.0.103",
+	version="0.0.104",
 	packages=find_packages(),
 	install_requires=requirements_from_file('requirements.txt'),
 	entry_points={
@@ -13,6 +13,7 @@ setup(
 			'tajimaD_windows=ThetaRecov.cli_windows:main',
 			'tajimaD_overall=ThetaRecov.cli_overall:main',
 			'pi_inbreed=ThetaRecov.pi_inbreed:main',
+			'pi_inbreed_pre=ThetaRecov.pi_inbreed_pre:main',
 			'pi_inbreed_multi=ThetaRecov.pi_inbreed_multi:main',
 		],
 	},
