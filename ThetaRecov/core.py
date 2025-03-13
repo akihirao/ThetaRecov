@@ -393,7 +393,7 @@ def diff_count_among(gt_matrix):
 
     valid_mask = ~np.isnan(row1) & ~ np.isnan(row2)
 
-    abs_diff = np.abs(row - row2)
+    abs_diff = np.abs(row1 - row2)
     abs_diff[~valid_mask] = 0
 
     diff_among = np.sum(abs_diff, axis = 1)
