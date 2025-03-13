@@ -29,7 +29,7 @@ def init_shared_memory(matrix):
     return gt_matrix_shm.name
 
 
-def cleanup_shared_memoty():
+def cleanup_shared_memory():
     """共有メモリを開放"""
     global gt_matrix_shm
     gt_matrix_shm.close()
