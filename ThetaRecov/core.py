@@ -417,12 +417,12 @@ def diff_count_among_ne(gt_matrix):
 
     valid_mask = ~np.isnan(row1) & ~ np.isnan(row2)
 
-    valid_row1 = np.where(valid_mask, row1, 0)
-    valid_row2 = np.where(valid_mask, row2, 0)
+    #valid_row1 = np.where(valid_mask, row1, 0)
+    #valid_row2 = np.where(valid_mask, row2, 0)
 
     diff_among = ne.evaluate("sum(abs(where(valid_mask, row1 - row2, 0)))")
-    count_among = ne.evaluate("sum(abs(valid_row1 - valid_row2))")
-    #count_among = ne.evaluate("sum(valid_mask)")
+    #count_among = ne.evaluate("sum(abs(valid_row1 - valid_row2))")
+    count_among = ne.evaluate("sum(valid_mask)")
 
     #abs_diff = np.abs(row1 - row2)
     #abs_diff[~valid_mask] = 0
