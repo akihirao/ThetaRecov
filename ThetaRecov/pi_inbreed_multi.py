@@ -22,18 +22,18 @@ def init_shared_memory(matrix):
     """共有メモリを作成し、行列をコピーする"""
     global gt_matrix_shm, gt_matrix_shape, gt_matrix_dtype # global variables
     gt_matrix_shape = matrix.shape
-    gt_matrix_shared = shared_memory.SharedMemory(create = True, size = matrix.nbytes)
-    gt_matrix = np.ndarray(gt_matrix_shape, dtype=matrix.dtype, buffer = gt_matrix_shared.buf)
-    np.copyto(gt_matrix, matrix)
-    gt_matrix_shm = gt_matrix_shared # keep name
-    return gt_matrix_shared.name
+    gt_matrix_dtype = matrix.dtype
+    gt_matrix_shm = shared_memory.SharedMemory(create = True, size = matrix.nbytes)
+    shared_array = np.ndarray(gt_matrix_shape, dtype=matrix.dtype, buffer = gt_matrix_shm.buf)
+    np.copyto(shared_array, matrix)
+    return gt_matrix_shm.name
 
 
 def cleanup_shared_memoty():
     """共有メモリを開放"""
-    global gt_matrix_shared
-    gt_matrix_shared.close()
-    gt_matrix_shared.unlink()
+    global gt_matrix_shm
+    gt_matrix_shm.close()
+    gt_matrix_shm.unlink()
 
 
 def init_process(name, shape, dtype):
@@ -97,6 +97,10 @@ def main():
 
     results = []
 
+
+    global gt_matrix_shm
+    global gt matrix
+
     gt_matrix = vcf2gt_matrix(IN_VCF)
     
     L = gt_matrix.shape[1] #length of sequences
@@ -105,6 +109,7 @@ def main():
     i_series = list(range(num_indiv))
     pairs = list(combinations(range(num_indiv), 2))
 
+    #共有メモリを作成
     shm_name = init_shared_memory(gt_matrix)
     
     result_within = []
@@ -117,8 +122,8 @@ def main():
     print("processing count among individuals")
 
     try:
-        with Pool(processes=num_threads, initializer=init_process, initargs=(gt_matrix_shm.name, gt_matrix.shape,gt_matrix.dtype)) as pool:
-            result_among = pool.starmap(diff_count_among_clipped, [(idx, gt_matrix_shm.name,gt_matrix.shape,gt_matrix.dtype) for idx in i_series])
+        with Pool(processes=num_threads, initializer=init_process, initargs=(shm_name, gt_matrix.shape,gt_matrix.dtype)) as pool:
+            result_among = pool.map(diff_count_among_clipped, i_series)
             #result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs[:20])
             #result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs)
         diff_count_among = np.array(result_among).sum(axis=0)
@@ -126,8 +131,7 @@ def main():
         print(f"diff_count_among: {diff_count_among}") #for debug
     
     finally:
-        gt_matrix_shared.close()
-        gt_matrix_shared.unlink()
+        cleanup_shared_memory()
 
     
     pi_overall = (diff_within + diff_count_among[0])/(count_within + diff_count_among[1])
