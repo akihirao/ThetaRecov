@@ -381,6 +381,7 @@ def diff_count_within(gt_matrix):
     return diff_within, count_within
 
 
+
 #========================================================
 def diff_count_among(gt_matrix):
     n,m = gt_matrix.shape
@@ -400,6 +401,7 @@ def diff_count_among(gt_matrix):
     count_among = np.sum(valid_mask)
 
     return diff_among, count_among
+
 
 
 #==========================================================================
