@@ -126,7 +126,8 @@ def main():
         print(f"diff_count_among: {diff_count_among}") #for debug
     
     finally:
-        cleanup_shared_memoty()
+        gt_matrix_shared.close()
+        gt_matrix_shared.unlink()
 
     
     pi_overall = (diff_within + diff_count_among[0])/(count_within + diff_count_among[1])
