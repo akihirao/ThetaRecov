@@ -386,7 +386,7 @@ def diff_count_among(gt_matrix):
     n,m = gt_matrix.shape
 
     # get indices of all pairwise combinations
-    pairs_indices = np.arrat(list(combinations(range(n), 2)))
+    pairs_indices = np.array(list(combinations(range(n), 2)))
 
     row1 = gt_matrix[pairs_indices[:,0], :]
     row2 = gt_matrix[pairs_indices[:,1], :]
