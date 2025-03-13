@@ -118,8 +118,9 @@ def main():
     # Count difference in nucleotide between two sequences within individuals
     print("processing count within individuals")
     diff_within, count_within = diff_count_within(gt_matrix)
+    pi_within = diff_within/count_within
+    print(f"pi_within: {pi_within}") # check how much pairs
 
-    print(f"Number fo sample pairs: {len(pairs)}") # check how much pairs
     print("processing count among individuals")
 
     try:
@@ -137,7 +138,7 @@ def main():
     
     
     pi_overall = (diff_within + diff_count_among[0])/(count_within + diff_count_among[1])
-    pi_within = diff_within/count_within
+    
     pi_among = diff_count_among[0]/diff_count_among[1]
     homo_deviance = 1 - pi_within/pi_among
 
