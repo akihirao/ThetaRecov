@@ -11,6 +11,8 @@ from cyvcf2 import VCF
 
 import ThetaRecov
 
+from ThetaRecov.core import vcf2gt_matrix
+from ThetaRecov.core import diff_count_within
 from ThetaRecov.core import calc_pi_within_elements_indiv_i
 from ThetaRecov.core import calc_pi_among_elements_indiv_ij
 
@@ -34,29 +36,37 @@ def main():
    
     args = parser.parse_args()
 
-    results = []
+    
 
     IN_VCF = args.input_vcf
-    vcf_reader = VCF(IN_VCF)
-
+    OUT_CSV = args.output_csv
     num_threads = args.threads
 
-    L = vcf_reader.seqlens[0] #length of sequences
-    samples = vcf_reader.samples #list of samples
-    num_samples = len(samples)
+    results = []
 
-    i_series = list(range(num_samples))
+    gt_matrix = vcf2gt_matrix(IN_VCF)
     
-    pairs = list(combinations(range(num_samples), 2))
 
-    print(f"Number fo sample pairs: {len(pairs)}") # check how much pairs
+    #vcf_reader = VCF(IN_VCF)
+
+    
+    L = gt_matrix.shape[1] #length of sequences
+    #samples = vcf_reader.samples #list of samples
+    num_indiv = int(gt_matrix.shape[0] / 2)
+
+    i_series = list(range(num_indiv))
+    
+    pairs = list(combinations(range(num_indiv), 2))
+
+    
     result_within = []
 
-    for i in range(num_samples):
-        #print(f"Processing individual {i}")# for debug
-        result_within.append(ThetaRecov.core.calc_pi_within_elements_indiv_i(IN_VCF, i))
-    diff_count_within = np.array(result_within).sum(axis=0)
+    # Count difference in nucleotide between two sequences within individuals
+    print("processing count within individuals")
+    diff_within, count_within = diff_count_within(gt_matrix)
 
+    print(f"Number fo sample pairs: {len(pairs)}") # check how much pairs
+    print("processing count among individuals")
     with Pool(num_threads) as pool:
         #result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs[:20])
         result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs)
@@ -65,8 +75,8 @@ def main():
     #print(f"diff_count_within: {diff_count_within}") #for debug
     print(f"diff_count_among: {diff_count_among}") #for debug
 
-    pi_overall = (diff_count_within[0] + diff_count_among[0])/(diff_count_within[1] + diff_count_among[1])
-    pi_within = diff_count_within[0]/diff_count_within[1]
+    pi_overall = (diff_within + diff_count_among[0])/(count_within + diff_count_among[1])
+    pi_within = diff_within/count_within
     pi_among = diff_count_among[0]/diff_count_among[1]
     homo_deviance = 1 - pi_within/pi_among
 
