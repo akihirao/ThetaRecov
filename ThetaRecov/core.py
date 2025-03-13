@@ -396,9 +396,9 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     diff_within = abs_diff.sum(axis = 1)
     count_within = valid_mask.sum(axis = 1)
 
-    #gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
+    gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
 
-    #num_indiv = gt_matrix_n_2_m.shape[0]
+    num_indiv = gt_matrix_n_2_m.shape[0]
     
     #diff_within = 0
     #count_within = 0
