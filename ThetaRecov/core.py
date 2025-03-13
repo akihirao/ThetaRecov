@@ -388,7 +388,7 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     odd_rows = gt_matrix[1::2, :]
 
     #mask for cols with nan
-    valid_mask = ~np.isnan(even_rows) & =np.isnan(odd_rows)
+    valid_mask = ~np.isnan(even_rows) & ~np.isnan(odd_rows)
 
     abs_diff = np.abs(even_rows - odd_rows)
     ads_diff[~valid_mask] = 0
