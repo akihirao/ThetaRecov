@@ -35,6 +35,7 @@ def cleanup_shared_memoty():
     gt_matrix_shared.close()
     gt_matrix_shared.unlink()
 
+
 def init_process(name, shape, dtype):
      """ワーカープロセスが共有メモリにアクセスできるようにする"""
      global gt_matrix
@@ -104,7 +105,7 @@ def main():
     i_series = list(range(num_indiv))
     pairs = list(combinations(range(num_indiv), 2))
 
-    shm_name = init_shared_memory()
+    shm_name = init_shared_memory(gt_matrix)
     
     result_within = []
 
