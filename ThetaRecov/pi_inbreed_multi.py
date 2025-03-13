@@ -5,60 +5,14 @@ import pandas as pd
 
 from itertools import combinations
 from multiprocessing import Pool
-from multiprocessing import shared_memory
-
 from functools import partial
 
 from cyvcf2 import VCF
 
 import ThetaRecov
 
-from ThetaRecov.core import vcf2gt_matrix
 from ThetaRecov.core import calc_pi_within_elements_indiv_i
 from ThetaRecov.core import calc_pi_among_elements_indiv_ij
-
-
-#def worker(name, shape, dtype):
-#    """共有メモリを開いて処理"""
-#    shm = shared_memory.SharedMemory(name=name)
-#    array = np.ndarray(shape, dtype=dtype, buffer=shm.buf)
-
-#    shm.array
-
-
-
-
-def pi_within_elements_indiv_i(index, name, shape, dtype):
-    """共有メモリを開いて, gt_matrixからpi_withinを算出"""
-
-    shm = shared_memory.SharedMemory(name=name)
-    matrix = np.ndarray(shape, dtype=dtype, buffer=shm.buf)
-
-    #matrix_n_2_m = matrix.reshape(-1,2,matrix.shape[1])
-    
-    row_1 = matrix[2 * index, :]
-    row_2 = matrix[2 * index + 1, :]
-
-    target_indiv_matrix = np.vstack((row_1, row_2))
-    nan_mask = np.isnan(target_indiv_matrix).any(axis=0)
-    filtered_target_indiv_matrix = target_indiv_matrix[~nan_mask]
-    print(matrix.dtype)
-    print(np.sum(matrix))
-
-
-    #target_indiv_matrix = matrix_n_2_m[index]
-    #mask = ~np.isnan(target_indiv_matrix).any(axis=0)
-    #filtered_target_indiv_matrix = target_indiv_matrix[:, mask]
-    print(filtered_target_indiv_matrix.dtype)#
-    diff_within = np.sum(np.abs(np.diff(filtered_target_indiv_matrix, axis=0)))
-    count_within = filtered_target_indiv_matrix.shape[1]
-
-    shm.close() #メモリを閉じる
-
-    #return count_within
-    return diff_within, count_within #２つの値をタプルで返す
-
-
 
 def main():
     """
@@ -83,66 +37,47 @@ def main():
     results = []
 
     IN_VCF = args.input_vcf
-    OUT_CSV = args.output_csv
+    vcf_reader = VCF(IN_VCF)
+
     num_threads = args.threads
 
-
-    #vcf_reader = VCF(IN_VCF)
-
-    gt_matrix = ThetaRecov.core.vcf2gt_matrix(IN_VCF) #matrix of 2n samples by m loci 
-    
-    #共有メモリを作成
-    shm = shared_memory.SharedMemory(create=True, size = gt_matrix.nbytes)
-
-    #共有メモリをndarry配列にリンク
-    shared_array = np.ndarray(gt_matrix.shape, dtype=gt_matrix.dtype, buffer=shm.buf)
-    shared_array = gt_matrix[:] #データをコピー
-
-    #L = vcf_reader.seqlens[0] #length of sequences
-    #samples = vcf_reader.samples #list of samples
-    num_samples = int(gt_matrix.shape[0] / 2)
-    print(f"Number of samples: {num_samples}") #for debug
+    L = vcf_reader.seqlens[0] #length of sequences
+    samples = vcf_reader.samples #list of samples
+    num_samples = len(samples)
 
     i_series = list(range(num_samples))
     
-    print(i_series)
     pairs = list(combinations(range(num_samples), 2))
 
-    
+    print(f"Number fo sample pairs: {len(pairs)}") # check how much pairs
+    result_within = []
+
+    for i in range(num_samples):
+        #print(f"Processing individual {i}")# for debug
+        result_within.append(ThetaRecov.core.calc_pi_within_elements_indiv_i(IN_VCF, i))
+    diff_count_within = np.array(result_within).sum(axis=0)
+
     with Pool(num_threads) as pool:
-        #result_within = []
-        #for res_within in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, gt_matrix), i_series):
-        #    result_within.append(res_within)
-        result_within = pool.starmap(pi_within_elements_indiv_i, [(i, gt_matrix, gt_matrix.shape, gt_matrix.dtype) for i in i_series])
+        #result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs[:20])
+        result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs)
+    diff_count_among = np.array(result_among).sum(axis=0)
 
-        #result_among = []
-        #for res_among in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, gt_matrix), pairs):
-        #    result_among.append(res_among)
+    #print(f"diff_count_within: {diff_count_within}") #for debug
+    print(f"diff_count_among: {diff_count_among}") #for debug
+
+    pi_overall = (diff_count_within[0] + diff_count_among[0])/(diff_count_within[1] + diff_count_among[1])
+    pi_within = diff_count_within[0]/diff_count_within[1]
+    pi_among = diff_count_among[0]/diff_count_among[1]
+    homo_deviance = 1 - pi_within/pi_among
+
+    results.append([pi_overall,pi_within,pi_among,homo_deviance])
+    df = pd.DataFrame(results, columns=["pi_overall","pi_within","pi_among","homo_deviance"])
+    df.to_csv(args.output_csv, sep=",", index=False)
     
-    diff_within, count_within = zip(*result_within)
-
-    #diff_count_within = np.array(zip(*result_within)).sum(axis=0)
-    #diff_count_among = np.array(result_among).sum(axis=0)
-    print(f"diff_within: {diff_within}") #for debug
-    print(f"count_within: {count_within}") #for debug
-
-    #print(f"diff_count_among: {diff_count_among}") #for debug
-
-    #pi_overall = (diff_count_within[0] + diff_count_among[0])/(diff_count_within[1] + diff_count_among[1])
-    #pi_within = diff_count_within[0]/diff_count_within[1]
-    #pi_among = diff_count_among[0]/diff_count_among[1]
-    #homo_deviance = 1 - pi_within/pi_among
-
     #results.append([pi_within])
     #df = pd.DataFrame(results, columns=["pi_within"])
-    #df.to_csv(OUT_CSV, sep=",", index=False)
+    #df.to_csv(args.output_csv, sep=",", index=False)
     
-    #results.append([pi_overall,pi_within,pi_among,homo_deviance])
-    #df = pd.DataFrame(results, columns=["pi_overall","pi_within","pi_among","homo_deviance"])
-    #df.to_csv(OUT_CSV, sep=",", index=False)
 
-    shm.close()
-    shm.unlink()
-    
 if __name__ == "__main__":
     main()
