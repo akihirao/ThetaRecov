@@ -364,6 +364,23 @@ def calc_pi_among_elements_indiv_ij(vcf_path, pair):
 
 
 
+def diff_count_within(gt_matrix):
+
+    even_rows = gt_matrix[::2, :]
+    odd_rows = gt_matrix[1::2, :]
+
+    #mask for cols with nan
+    valid_mask = ~np.isnan(even_rows) & ~np.isnan(odd_rows)
+
+    abs_diff = np.abs(even_rows - odd_rows)
+    abs_diff[~valid_mask] = 0
+
+    diff_within = np.sum(abs_diff.sum(axis = 1))
+    count_within = np.sum(valid_mask.sum(axis = 1))
+
+    return diff_within, count_within
+
+
 
 
 #==========================================================================
@@ -377,7 +394,6 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
         a csv file contains positons and estimates as follows: pi_within, pi_among, homo_deviance
     
     """
-
     inbreed_results = []
     
     gt_matrix = vcf2gt_matrix(vcf_path)
@@ -385,29 +401,7 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     base_sequenced = gt_matrix.shape[1]
     num_indiv = int(gt_matrix.shape[0] / 2)
     
-    even_rows = gt_matrix[::2, :]
-    odd_rows = gt_matrix[1::2, :]
-
-    #mask for cols with nan
-    valid_mask = ~np.isnan(even_rows) & ~np.isnan(odd_rows)
-
-    abs_diff = np.abs(even_rows - odd_rows)
-    abs_diff[~valid_mask] = 0
-
-    diff_within = np.sum(abs_diff.sum(axis = 1))
-    count_within = np.sum(valid_mask.sum(axis = 1))
-
-    gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
-
-    
-    #diff_within = 0
-    #count_within = 0
-    #for i in range(num_indiv):
-    #    target_indiv_gt_matrix = gt_matrix_n_2_m[i]
-    #    mask = ~np.isnan(target_indiv_gt_matrix).any(axis=0)
-    #    target_indiv_gt_matrix_non_nan = target_indiv_gt_matrix[:, mask]
-    #    diff_within += np.sum(np.abs(np.diff(target_indiv_gt_matrix_non_nan, axis=0)))
-    #    count_within += target_indiv_gt_matrix_non_nan.shape[1]
+    diff_within, count_within = diff_count_within(gt_matrix)
 
     pi_within = diff_within/count_within
 
@@ -418,32 +412,37 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     count_among = 0
     num_diff_comb = num_indiv * (num_indiv - 1) // 2
 
+
+    for i in range(gt_matrix.shape[0]):
+        gt_matrix_clipped = np.delete(gt_matrix,i, axis = 0)
+
+
     # (i, j) の組み合わせを全て列挙 (i < j のみ)
-    for i, j in combinations(range(gt_matrix_n_2_m.shape[0]), 2):
-        # 4つのペアの絶対差を求める
-        diff_11_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 0,:])) # (iの1行目, jの1行目)
-        diff_11_mask = ~np.isnan(diff_11_indiv_gt_matrix).any(axis=0)
-        diff_11_indiv_gt_matrix_non_nan = diff_11_indiv_gt_matrix[:, diff_11_mask]
-        diff_among += np.sum(np.abs(np.diff(diff_11_indiv_gt_matrix_non_nan, axis=0)))
-        count_among += diff_11_indiv_gt_matrix_non_nan.shape[1]
+    #for i, j in combinations(range(gt_matrix_n_2_m.shape[0]), 2):
+    #    # 4つのペアの絶対差を求める
+    #    diff_11_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 0,:])) # (iの1行目, jの1行目)
+    #    diff_11_mask = ~np.isnan(diff_11_indiv_gt_matrix).any(axis=0)
+    #    diff_11_indiv_gt_matrix_non_nan = diff_11_indiv_gt_matrix[:, diff_11_mask]
+    #    diff_among += np.sum(np.abs(np.diff(diff_11_indiv_gt_matrix_non_nan, axis=0)))
+    #    count_among += diff_11_indiv_gt_matrix_non_nan.shape[1]
 
-        diff_12_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
-        diff_12_mask = ~np.isnan(diff_12_indiv_gt_matrix).any(axis=0)
-        diff_12_indiv_gt_matrix_non_nan = diff_12_indiv_gt_matrix[:, diff_12_mask]
-        diff_among += np.sum(np.abs(np.diff(diff_12_indiv_gt_matrix_non_nan, axis=0)))
-        count_among += diff_12_indiv_gt_matrix_non_nan.shape[1]
+    #    diff_12_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
+    #    diff_12_mask = ~np.isnan(diff_12_indiv_gt_matrix).any(axis=0)
+    #    diff_12_indiv_gt_matrix_non_nan = diff_12_indiv_gt_matrix[:, diff_12_mask]
+    #    diff_among += np.sum(np.abs(np.diff(diff_12_indiv_gt_matrix_non_nan, axis=0)))
+    #    count_among += diff_12_indiv_gt_matrix_non_nan.shape[1]
 
-        diff_21_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 0, :])) # (iの1行目, jの1行目)
-        diff_21_mask = ~np.isnan(diff_21_indiv_gt_matrix).any(axis=0)
-        diff_21_indiv_gt_matrix_non_nan = diff_21_indiv_gt_matrix[:, diff_21_mask]
-        diff_among += np.sum(np.abs(np.diff(diff_21_indiv_gt_matrix_non_nan, axis=0)))
-        count_among += diff_21_indiv_gt_matrix_non_nan.shape[1]
+    #    diff_21_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 0, :])) # (iの1行目, jの1行目)
+        # diff_21_mask = ~np.isnan(diff_21_indiv_gt_matrix).any(axis=0)
+        # diff_21_indiv_gt_matrix_non_nan = diff_21_indiv_gt_matrix[:, diff_21_mask]
+        # diff_among += np.sum(np.abs(np.diff(diff_21_indiv_gt_matrix_non_nan, axis=0)))
+        # count_among += diff_21_indiv_gt_matrix_non_nan.shape[1]
 
-        diff_22_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
-        diff_22_mask = ~np.isnan(diff_22_indiv_gt_matrix).any(axis=0)
-        diff_22_indiv_gt_matrix_non_nan = diff_22_indiv_gt_matrix[:, diff_22_mask]
-        diff_among += np.sum(np.abs(np.diff(diff_22_indiv_gt_matrix_non_nan, axis=0)))
-        count_among += diff_22_indiv_gt_matrix_non_nan.shape[1]
+        # diff_22_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
+        # diff_22_mask = ~np.isnan(diff_22_indiv_gt_matrix).any(axis=0)
+        # diff_22_indiv_gt_matrix_non_nan = diff_22_indiv_gt_matrix[:, diff_22_mask]
+        # diff_among += np.sum(np.abs(np.diff(diff_22_indiv_gt_matrix_non_nan, axis=0)))
+        # count_among += diff_22_indiv_gt_matrix_non_nan.shape[1]
 
     pi_among = diff_among/count_among
 
