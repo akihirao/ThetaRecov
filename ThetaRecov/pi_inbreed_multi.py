@@ -23,7 +23,7 @@ def init_shared_memory(matrix):
     global gt_matrix_shm, gt_matrix_shape, gt_matrix_dtype # global variables
     gt_matrix_shape = matrix.shape
     gt_matrix_shared = shared_memory.SharedMemory(create = True, size = matrix.nbytes)
-    gt_matrix = np.ndarry(gt_matrix_shape, dtype=matrix.dtype, buffer = gt_matrix_shared.buf)
+    gt_matrix = np.ndarray(gt_matrix_shape, dtype=matrix.dtype, buffer = gt_matrix_shared.buf)
     np.copyto(gt_matrix, matrix)
     gt_matrix_shm = gt_matrix_shared # keep name
     return gt_matrix_shared.name
