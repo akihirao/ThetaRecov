@@ -18,12 +18,12 @@ from ThetaRecov.core import calc_pi_within_elements_indiv_i
 from ThetaRecov.core import calc_pi_among_elements_indiv_ij
 
 
-def worker(name, shape, dtype):
-    """共有メモリを開いて処理"""
-    shm = shared_memory.SharedMemory(name=name)
-    array = np.ndarray(shape, dtype=dtype, buffer=shm.buf)
+#def worker(name, shape, dtype):
+#    """共有メモリを開いて処理"""
+#    shm = shared_memory.SharedMemory(name=name)
+#    array = np.ndarray(shape, dtype=dtype, buffer=shm.buf)
 
-    shm.array
+#    shm.array
 
 
 
@@ -34,7 +34,7 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
     shm = shared_memory.SharedMemory(name=name)
     matrix = np.ndarray(shape, dtype=dtype, buffer=shm.buf)
 
-    matrix_n_2_m = matrix.reshape(-1,2,matrix.shape[1])
+    #matrix_n_2_m = matrix.reshape(-1,2,matrix.shape[1])
     
     row_1 = matrix[2 * index, :]
     row_2 = matrix[2 * index + 1, :]
@@ -111,7 +111,7 @@ def main():
         #result_within = []
         #for res_within in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_within_elements_indiv_i, gt_matrix), i_series):
         #    result_within.append(res_within)
-        result_within = pool.starmap(pi_within_elements_indiv_i, [(i, shm.name, gt_matrix.shape, gt_matrix.dtype) for i in i_series])
+        result_within = pool.starmap(pi_within_elements_indiv_i, [(i, shared_array, gt_matrix.shape, gt_matrix.dtype) for i in i_series])
 
         #result_among = []
         #for res_among in pool.imap_unordered(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, gt_matrix), pairs):
