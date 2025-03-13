@@ -383,7 +383,7 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     gt_matrix = vcf2gt_matrix(vcf_path)
 
     base_sequenced = gt_matrix.shape[1]
-    num_samples = int(gt_matrix.shape[0] / 2)
+    num_indiv = int(gt_matrix.shape[0] / 2)
     
     even_rows = gt_matrix[::2, :]
     odd_rows = gt_matrix[1::2, :]
