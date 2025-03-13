@@ -3,6 +3,8 @@ import warnings
 import numpy as np
 import pandas as pd
 
+import numexpr as ne
+
 from itertools import combinations
 from multiprocessing import Pool
 
@@ -404,6 +406,32 @@ def diff_count_among(gt_matrix):
 
 
 
+def diff_count_among_ne(gt_matrix):
+    n,m = gt_matrix.shape
+
+    # get indices of all pairwise combinations
+    pairs_indices = np.array(list(combinations(range(n), 2)))
+
+    row1 = gt_matrix[pairs_indices[:,0], :]
+    row2 = gt_matrix[pairs_indices[:,1], :]
+
+    valid_mask = ~np.isnan(row1) & ~ np.isnan(row2)
+
+    valid_row1 = np.where(valid.mask, row1, 0)
+    valid_row2 = np.where(valid.mask, row2, 0)
+
+    diff_among = ne.evaluate("sum(abs(valid_row1-valid_row2)")
+    count_among = ne.evaluate("sum(valid_mask)")
+
+    #abs_diff = np.abs(row1 - row2)
+    #abs_diff[~valid_mask] = 0
+
+    #diff_among = np.sum(abs_diff)
+    #count_among = np.sum(valid_mask)
+
+    return diff_among, count_among
+
+
 #==========================================================================
 def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     """
@@ -434,7 +462,7 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
 
     for i in range(gt_matrix.shape[0]):
         gt_matrix_clipped = np.delete(gt_matrix,i, axis = 0)
-        diff_among_indiv, count_among_indiv = diff_count_among(gt_matrix_clipped)
+        diff_among_indiv, count_among_indiv = diff_count_among_ne(gt_matrix_clipped)
         diff_among += diff_among_indiv
         count_among += count_among_indiv
 
