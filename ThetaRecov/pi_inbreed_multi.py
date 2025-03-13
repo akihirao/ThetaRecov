@@ -107,6 +107,7 @@ def main():
 
     num_indiv = int(gt_matrix.shape[0] / 2)
     i_series = list(range(num_indiv))
+    print(i_series)
     pairs = list(combinations(range(num_indiv), 2))
 
     #共有メモリを作成
@@ -126,13 +127,14 @@ def main():
             result_among = pool.map(diff_count_among_clipped, i_series)
             #result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs[:20])
             #result_among =  pool.map(partial(ThetaRecov.core.calc_pi_among_elements_indiv_ij, IN_VCF), pairs)
-        diff_count_among = np.array(result_among).sum(axis=0)
-
-        print(f"diff_count_among: {diff_count_among}") #for debug
-    
+        
     finally:
         cleanup_shared_memory()
 
+
+    diff_count_among = np.array(result_among).sum(axis=0)
+    print(f"diff_count_among: {diff_count_among}") #for debug
+    
     
     pi_overall = (diff_within + diff_count_among[0])/(count_within + diff_count_among[1])
     pi_within = diff_within/count_within
