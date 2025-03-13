@@ -36,8 +36,8 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
 
     #matrix_n_2_m = matrix.reshape(-1,2,matrix.shape[1])
     
-    row_1 = matrix[2 * index + 1, :]
-    row_2 = matrix[2 * index + 2, :]
+    row_1 = matrix[2 * index, :]
+    row_2 = matrix[2 * index + 1, :]
 
     target_indiv_matrix = np.vstack((row_1, row_2))
     #nan_mask = np.isnan(target_indiv_matrix[]).any(axis=0)
@@ -99,6 +99,7 @@ def main():
     #L = vcf_reader.seqlens[0] #length of sequences
     #samples = vcf_reader.samples #list of samples
     num_samples = int(gt_matrix.shape[0] / 2)
+    print(f"number of samples: {num_samples}")#for debug
 
     i_series = list(range(num_samples))
     
