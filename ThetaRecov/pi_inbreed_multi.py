@@ -48,6 +48,7 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
     mask = ~np.isnan(target_indiv_matrix).any(axis=0)
     filtered_target_indiv_matrix = target_indiv_matrix[:, mask]
     print(filtered_target_indiv_matrix.dtype)#
+    print(np.sum(filtered_target_indiv_matrix))
     diff_within = np.sum(np.abs(np.diff(filtered_target_indiv_matrix, axis=0)))
     count_within = filtered_target_indiv_matrix.shape[1]
 
