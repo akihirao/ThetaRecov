@@ -383,6 +383,7 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     gt_matrix = vcf2gt_matrix(vcf_path)
 
     base_sequenced = gt_matrix.shape[1]
+    num_samples = int(gt_matrix.shape[0] / 2)
     
     even_rows = gt_matrix[::2, :]
     odd_rows = gt_matrix[1::2, :]
@@ -393,12 +394,11 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     abs_diff = np.abs(even_rows - odd_rows)
     abs_diff[~valid_mask] = 0
 
-    diff_within = abs_diff.sum(axis = 1)
-    count_within = valid_mask.sum(axis = 1)
+    diff_within = np.sum(abs_diff.sum(axis = 1))
+    count_within = np.sum(valid_mask.sum(axis = 1))
 
     gt_matrix_n_2_m = gt_matrix.reshape(-1,2,gt_matrix.shape[1])
 
-    num_indiv = gt_matrix_n_2_m.shape[0]
     
     #diff_within = 0
     #count_within = 0
