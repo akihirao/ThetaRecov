@@ -35,6 +35,7 @@ def pi_within_elements_indiv_i(index, name, shape, dtype):
     matrix = np.ndarray(shape, dtype=dtype, buffer=shm.buf)
 
     #matrix_n_2_m = matrix.reshape(-1,2,matrix.shape[1])
+    print(np.sum(matrix))
     
     row_1 = matrix[2 * index, :]
     row_2 = matrix[2 * index + 1, :]
