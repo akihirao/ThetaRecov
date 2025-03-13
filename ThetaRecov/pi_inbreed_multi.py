@@ -49,7 +49,7 @@ def diff_count_among_clipped(index):
     """共有メモリを開き、対応する行を処理"""
     global gt_matrix
 
-    gt_matrix_clipped = np.delete(gt_matrix,i, axis = 0)
+    gt_matrix_clipped = np.delete(gt_matrix,index, axis = 0)
 
     n,m = gt_matrix_clipped.shape
 
