@@ -383,6 +383,9 @@ def diff_count_within(gt_matrix):
 
 
 
+
+
+
 #==========================================================================
 def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     """
@@ -444,16 +447,24 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
         # diff_among += np.sum(np.abs(np.diff(diff_22_indiv_gt_matrix_non_nan, axis=0)))
         # count_among += diff_22_indiv_gt_matrix_non_nan.shape[1]
 
-    pi_among = diff_among/count_among
+    #pi_among = diff_among/count_among
 
-    homo_deviance = 1 - pi_within/pi_among
+    #homo_deviance = 1 - pi_within/pi_among
 
-    pi_overall = (diff_within + diff_among)/(count_within + count_among)
-    inbreed_results.append([pi_overall,pi_within,pi_among,homo_deviance])
+    #pi_overall = (diff_within + diff_among)/(count_within + count_among)
+    #inbreed_results.append([pi_overall,pi_within,pi_among,homo_deviance])
 
-    df = pd.DataFrame(inbreed_results, columns=["pi_overall","pi_within","pi_among","homo_deviance"])
+    #df = pd.DataFrame(inbreed_results, columns=["pi_overall","pi_within","pi_among","homo_deviance"])
+    #df.to_csv(output_csv, sep=",", index=False)
+    
+
+    inbreed_results.append([ppi_within])
+
+    df = pd.DataFrame(inbreed_results, columns=["pi_within"])
     df.to_csv(output_csv, sep=",", index=False)
     
+
+
     return df
 
 
