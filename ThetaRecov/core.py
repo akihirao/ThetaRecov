@@ -547,8 +547,10 @@ def calc_inbreed_pre(vcf_path, output_csv = "inbreed.csv"):
     count_among = 0
     num_diff_comb = num_indiv * (num_indiv - 1) // 2
 
+    all_combinations = list(combinations(range(gt_matrix_n_2_m.shape[0]), 2))
     # (i, j) の組み合わせを全て列挙 (i < j のみ)
-    for i, j in combinations(range(gt_matrix_n_2_m.shape[0]), 2):
+    #for i, j in combinations(range(gt_matrix_n_2_m.shape[0]), 2):
+    for i, j in all_combinations:
         # 4つのペアの絶対差を求める
         diff_11_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 0,:])) # (iの1行目, jの1行目)
         diff_11_mask = ~np.isnan(diff_11_indiv_gt_matrix).any(axis=0)
@@ -578,9 +580,10 @@ def calc_inbreed_pre(vcf_path, output_csv = "inbreed.csv"):
 
     homo_deviance = 1 - pi_within/pi_among
 
-    inbreed_results.append([pi_within,pi_among,homo_deviance])
+    pi_overall = (diff_within + diff_among)/(count_within + count_among)
+    inbreed_results.append([pi_overall,pi_within,pi_among,homo_deviance])
 
-    df = pd.DataFrame(inbreed_results, columns=["pi_within","pi_among","homo_deviance"])
+    df = pd.DataFrame(inbreed_results, columns=["pi_overall","pi_within","pi_among","homo_deviance"])
     df.to_csv(output_csv, sep=",", index=False)
     
     return df
