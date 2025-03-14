@@ -496,7 +496,7 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     diff_among = 0
     count_among = 0
 
-    for i in range(num_indiv):
+    for i in range(num_indiv - 1):
         diff_among_indiv, count_among_indiv = diff_count_among_ne(gt_matrix, i)
         diff_among += diff_among_indiv
         count_among += count_among_indiv
