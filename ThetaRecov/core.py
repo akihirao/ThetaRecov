@@ -304,7 +304,7 @@ def calc_pi_within_elements_indiv_i(vcf_path, i):
 
 
 def generate_i_pairs(n,i,j):
-    return[(i, k) for k in range(n) if k != i and k != j]
+    return np.array([(i, k) for k in range(n) if k != i and k != j])
 
 
 def calc_pi_among_elements_indiv_ij(vcf_path, pair):
