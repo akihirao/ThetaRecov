@@ -705,7 +705,7 @@ def calc_inbreed_boot(vcf_path, output_csv = "inbreed.csv", coverage = 3, num_bo
     
     """
 
-    results = np.zeros((4,num_boots))
+    results = np.zeros((num_boots,4))
     
     gt_matrix_init = vcf2gt_matrix(vcf_path)
     n, m = gt_matrix_init.shape
@@ -772,10 +772,10 @@ def calc_inbreed_boot(vcf_path, output_csv = "inbreed.csv", coverage = 3, num_bo
 
         pi_overall = (diff_within + diff_among)/(count_within + count_among)
 
-        results[0, i] = pi_overall
-        results[1, i] = pi_within
-        results[2, i] = pi_among
-        results[3, i] = homo_deviance
+        results[i, 0] = pi_overall
+        results[i, 1] = pi_within
+        results[i, 2] = pi_among
+        results[i, 3] = homo_deviance
 
         
     df = pd.DataFrame(results, columns=["pi_overall","pi_within","pi_among","homo_deviance"])
