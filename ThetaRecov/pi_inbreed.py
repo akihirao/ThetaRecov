@@ -3,6 +3,8 @@ import argparse
 import numpy as np
 import pandas as pd
 
+import numexpr as ne
+
 from cyvcf2 import VCF
 
 import ThetaRecov

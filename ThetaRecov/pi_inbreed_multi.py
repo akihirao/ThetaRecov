@@ -3,6 +3,8 @@ import argparse
 import numpy as np
 import pandas as pd
 
+import numexpr as ne
+
 from itertools import combinations
 from multiprocessing import Pool
 from multiprocessing import shared_memory
@@ -61,10 +63,7 @@ def diff_count_among_clipped(index):
 
     valid_mask = ~np.isnan(row1) & ~ np.isnan(row2)
 
-    abs_diff = np.abs(row1 - row2)
-    abs_diff[~valid_mask] = 0
-
-    diff_among = np.sum(abs_diff)
+    diff_among = ne.evaluate("sum(abs(where(valid_mask, row1 - row2, 0)))")
     count_among = np.sum(valid_mask)
 
     return diff_among, count_among
