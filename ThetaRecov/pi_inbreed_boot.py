@@ -39,7 +39,7 @@ def main():
     ThetaRecov.core.calc_inbreed_boot(args.input_vcf,
         output_csv = args.output_csv,
         coverage = args.coverage,
-        num_boots = args.boot)
+        num_boots = args.num_boots)
 
 
     end_time = time.time() #stamp end time
