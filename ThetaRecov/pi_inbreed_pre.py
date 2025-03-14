@@ -19,6 +19,9 @@ def main():
     Returns:
         pandas data frame of estimated parameters 
     """
+
+    start_time = time.time() #stamp start time
+
     parser = argparse.ArgumentParser(description="Compute the deviance frow H-W equibrium")
     parser._action_groups.pop()
     required = parser.add_argument_group('required arguments')
@@ -32,6 +35,10 @@ def main():
     ThetaRecov.core.calc_inbreed_pre(args.input_vcf,
         output_csv = args.output_csv)
     
+    end_time = time.time() #stamp end time
+    elasped_time = end_time - start_time # (sec)
+    print(f"Function execution time: {elapsed_time:.1f} seconds")
+
 
 if __name__ == "__main__":
     main()
