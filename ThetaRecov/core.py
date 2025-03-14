@@ -418,10 +418,10 @@ def diff_count_among(gt_matrix, indiv_index):
     valid_mask_allel_2_fix = ~np.isnan(row1_allel_2_fix) & ~ np.isnan(row2_allel_2_fix)
 
     abs_diff_allel_1_fix = np.abs(row1_allel_1_fix - row2_allel_1_fix)
-    abs_count_allel_1_fix[~valid_mask_allel_1_fix] = 0
+    abs_diff_allel_1_fix[~valid_mask_allel_1_fix] = 0
 
     abs_diff_allel_2_fix = np.abs(row1_allel_2_fix - row2_allel_2_fix)
-    abs_count_allel_2_fix[~valid_mask_allel_2_fix] = 0
+    abs_diff_allel_2_fix[~valid_mask_allel_2_fix] = 0
 
     diff_among_allel_1_fix = np.sum(abs_diff_allel_1_fix)
     count_among_allel_1_fix = np.sum(valid_mask_allel_1_fix)
