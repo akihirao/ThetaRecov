@@ -634,8 +634,8 @@ def calc_inbreed_light(vcf_path, output_csv = "inbreed.csv", coverage = 3):
     #for i, j in combinations(range(gt_matrix_n_2_m.shape[0]), 2):
     for i, j in selected_combinations:
         # 4つのペアの絶対差を求める
-        gt_matrix_n_2_m_i = gt_matrix_n_2_m[i, 0, :]
-        gt_matrix_n_2_m_j = gt_matrix_n_2_m[j, 0, :]
+        gt_matrix_n_2_m_i = gt_matrix_n_2_m[i, :, :]
+        gt_matrix_n_2_m_j = gt_matrix_n_2_m[j, :, :]
 
         i_matrix = gt_matrix_n_2_m_i[:, np.newaxis, :] #(2,1,m)
         j_matrix = gt_matrix_n_2_m_j[np.newaxis, :, :] #(1,2,m)
