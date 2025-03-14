@@ -625,7 +625,7 @@ def calc_inbreed_light(vcf_path, output_csv = "inbreed.csv", coverage = 3):
     # (i, j) の組み合わせを全て列挙 (i < j のみ)
     all_combinations = list(combinations(range(gt_matrix_n_2_m.shape[0]), 2))
 
-    num_selected_paris = num_indiv * 3
+    num_selected_pairs = num_indiv * 3
     if num_selected_pairs >= len(all_combinations):
         selected_combinations = all_combinations
     else:
