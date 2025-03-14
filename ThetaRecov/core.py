@@ -642,9 +642,16 @@ def calc_inbreed_light(vcf_path, output_csv = "inbreed.csv", coverage = 3):
 
         valid_mask = ~np.isnan(i_matrix) & ~ np.isnan(j_matrix) #(2,2,m)
 
+
         abs_diff_among = np.abs(i_matrix - j_matrix) # (2,2,m)
-        diff_among += np.sum(abs_diff_among * valid_mask) # (2,2)各ペアの総和
-        count_among += np.sum(valid_mask)
+        diff_among_ij = np.sum(abs_diff_among * valid_mask) # (2,2)各ペアの総和
+        count_among_ij = np.sum(valid_mask)
+
+        print(diff_among_ij)
+        print(count_among_ij)
+
+        diff_among += diff_among_ij
+        count_among += count_among_ij
 
 
         #diff_11_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 0,:])) # (iの1行目, jの1行目)
