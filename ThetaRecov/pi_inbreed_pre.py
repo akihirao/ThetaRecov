@@ -37,7 +37,7 @@ def main():
     
     end_time = time.time() #stamp end time
     elasped_time = end_time - start_time # (sec)
-    print(f"Function execution time: {elapsed_time:.1f} seconds")
+    print(f"Function execution time: {elasped_time:.1f} seconds")
 
 
 if __name__ == "__main__":
