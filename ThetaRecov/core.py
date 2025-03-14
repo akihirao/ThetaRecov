@@ -303,6 +303,9 @@ def calc_pi_within_elements_indiv_i(vcf_path, i):
 
 
 
+def generate_i_pairs(n,i,j):
+    return[(i, k) for k in range(n) if k != i and k != j]
+
 
 def calc_pi_among_elements_indiv_ij(vcf_path, pair):
     """
@@ -385,22 +388,49 @@ def diff_count_within(gt_matrix):
 
 
 #========================================================
-def diff_count_among(gt_matrix):
+def diff_count_among(gt_matrix, indiv_index):
+
+    allel_1_index = indiv_index * 2
+    allel_2_index = indiv_index * 2 + 1
+
     n,m = gt_matrix.shape
+ 
+    #gt_matrix_allel_1_clipped = np.delete(gt_matrix, allel_1_index, axis = 0)
+    #gt_matrix_allel_2_clipped = np.delete(gt_matrix, allel_2_index, axis = 0)
+
+    pairs_allel_1_fix = generate_i_pairs(n,allel_1_index,allel_2_index)
+    pairs_allel_2_fix = generate_i_pairs(n,allel_2_index,allel_1_index)
+
+    row1_allel_1_fix = gt_matrix[pairs_allel_1_fix[:,0], :]
+    row2_allel_1_fix = gt_matrix[pairs_allel_1_fix[:,1], :]
+
+    row1_allel_2_fix = gt_matrix[pairs_allel_2_fix[:,0], :]
+    row2_allel_2_fix = gt_matrix[pairs_allel_2_fix[:,1], :]
+
 
     # get indices of all pairwise combinations
-    pairs_indices = np.array(list(combinations(range(n), 2)))
+    #pairs_indices = np.array(list(combinations(range(n), 2)))
 
-    row1 = gt_matrix[pairs_indices[:,0], :]
-    row2 = gt_matrix[pairs_indices[:,1], :]
+    #row1 = gt_matrix[pairs_indices[:,0], :]
+    #row2 = gt_matrix[pairs_indices[:,1], :]
 
-    valid_mask = ~np.isnan(row1) & ~ np.isnan(row2)
+    valid_mask_allel_1_fix = ~np.isnan(row1_allel_1_fix) & ~ np.isnan(row2_allel_1_fix)
+    valid_mask_allel_2_fix = ~np.isnan(row1_allel_2_fix) & ~ np.isnan(row2_allel_2_fix)
 
-    abs_diff = np.abs(row1 - row2)
-    abs_diff[~valid_mask] = 0
+    abs_diff_allel_1_fix = np.abs(row1_allel_1_fix - row2_allel_1_fix)
+    abs_count_allel_1_fix[~valid_mask_allel_1_fix] = 0
 
-    diff_among = np.sum(abs_diff)
-    count_among = np.sum(valid_mask)
+    abs_diff_allel_2_fix = np.abs(row1_allel_2_fix - row2_allel_2_fix)
+    abs_count_allel_2_fix[~valid_mask_allel_2_fix] = 0
+
+    diff_among_allel_1_fix = np.sum(abs_diff_allel_1_fix)
+    count_among_allel_1_fix = np.sum(valid_mask_allel_1_fix)
+
+    diff_among_allel_2_fix = np.sum(abs_diff_allel_2_fix)
+    count_among_allel_2_fix = np.sum(valid_mask_allel_2_fix)
+
+    diff_among = diff_among_allel_1_fix + diff_among_allel_2_fix
+    count_among = count_among_allel_1_fix + count_among_allel_2_fix
 
     return diff_among, count_among
 
@@ -417,20 +447,9 @@ def diff_count_among_ne(gt_matrix):
 
     valid_mask = ~np.isnan(row1) & ~ np.isnan(row2)
 
-    #valid_row1 = np.where(valid_mask, row1, 0)
-    #valid_row2 = np.where(valid_mask, row2, 0)
-
     diff_among = ne.evaluate("sum(abs(where(valid_mask, row1 - row2, 0)))")
-    #count_among = ne.evaluate("sum(abs(valid_row1 - valid_row2))")
     count_among = np.sum(valid_mask)
-
-
-    #abs_diff = np.abs(row1 - row2)
-    #abs_diff[~valid_mask] = 0
-
-    #diff_among = np.sum(abs_diff)
-    #count_among = np.sum(valid_mask)
-
+ 
     return diff_among, count_among
 
 
@@ -462,9 +481,8 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     diff_among = 0
     count_among = 0
 
-    for i in range(gt_matrix.shape[0]):
-        gt_matrix_clipped = np.delete(gt_matrix,i, axis = 0)
-        diff_among_indiv, count_among_indiv = diff_count_among_ne(gt_matrix_clipped)
+    for i in range(num_indiv):
+        diff_among_indiv, count_among_indiv = diff_count_among(gt_matrix, i)
         diff_among += diff_among_indiv
         count_among += count_among_indiv
 
