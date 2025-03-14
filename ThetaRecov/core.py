@@ -436,19 +436,34 @@ def diff_count_among(gt_matrix, indiv_index):
 
 
 
-def diff_count_among_ne(gt_matrix):
+def diff_count_among_ne(gt_matrix, indiv_index):
     n,m = gt_matrix.shape
 
-    # get indices of all pairwise combinations
-    pairs_indices = np.array(list(combinations(range(n), 2)))
+    allel_1_index = indiv_index * 2
+    allel_2_index = indiv_index * 2 + 1
 
-    row1 = gt_matrix[pairs_indices[:,0], :]
-    row2 = gt_matrix[pairs_indices[:,1], :]
+    n,m = gt_matrix.shape
+ 
+    #gt_matrix_allel_1_clipped = np.delete(gt_matrix, allel_1_index, axis = 0)
+    #gt_matrix_allel_2_clipped = np.delete(gt_matrix, allel_2_index, axis = 0)
 
-    valid_mask = ~np.isnan(row1) & ~ np.isnan(row2)
+    pairs_allel_1_fix = generate_i_pairs(n,allel_1_index,allel_2_index)
+    row1_allel_1_fix = gt_matrix[pairs_allel_1_fix[:,0], :]
+    row2_allel_1_fix = gt_matrix[pairs_allel_1_fix[:,1], :]
+    valid_mask_allel_1_fix = ~np.isnan(row1_allel_1_fix) & ~ np.isnan(row2_allel_1_fix)
+    diff_among_allel_1_fix = ne.evaluate("sum(abs(where(valid_mask_allel_1_fix, row1_allel_1_fix - row2_allel_1_fix, 0)))")
+    count_among_allel_1_fix = np.sum(valid_mask_allel_1_fix)
 
-    diff_among = ne.evaluate("sum(abs(where(valid_mask, row1 - row2, 0)))")
-    count_among = np.sum(valid_mask)
+
+    pairs_allel_2_fix = generate_i_pairs(n,allel_2_index,allel_1_index)
+    row1_allel_2_fix = gt_matrix[pairs_allel_2_fix[:,0], :]
+    row2_allel_2_fix = gt_matrix[pairs_allel_2_fix[:,1], :]
+    valid_mask_allel_2_fix = ~np.isnan(row1_allel_2_fix) & ~ np.isnan(row2_allel_2_fix)
+    diff_among_allel_2_fix = ne.evaluate("sum(abs(where(valid_mask_allel_2_fix, row1_allel_2_fix - row2_allel_2_fix, 0)))")
+    count_among_allel_2_fix = np.sum(valid_mask_allel_2_fix)
+
+    diff_among = diff_among_allel_1_fix + diff_among_allel_2_fix
+    count_among = count_among_allel_1_fix + count_among_allel_2_fix
  
     return diff_among, count_among
 
@@ -482,7 +497,7 @@ def calc_inbreed(vcf_path, output_csv = "inbreed.csv"):
     count_among = 0
 
     for i in range(num_indiv):
-        diff_among_indiv, count_among_indiv = diff_count_among(gt_matrix, i)
+        diff_among_indiv, count_among_indiv = diff_count_among_ne(gt_matrix, i)
         diff_among += diff_among_indiv
         count_among += count_among_indiv
 
