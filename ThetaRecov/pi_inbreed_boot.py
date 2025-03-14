@@ -32,7 +32,7 @@ def main():
     required.add_argument('--input_vcf', '-in', type=str, nargs = '?', help = 'Input a VCF/VCF.gz file', required = True)
     optional.add_argument('--output_csv', '-out', type=str, nargs = '?', help = 'Output a csv file (default: inbreed.csv)', default = "inbreed.csv")
     optional.add_argument('--coverage', '-cov', type=int, nargs = '?', help = 'coverage of pairs: ratio down-sized number of pairs to number of individuals (default: 3)', default = 3)
-     optional.add_argument('--num_boots', '-boots', type=int, nargs = '?', help = 'Number of bootstraps (default: 100)', default = 100)
+    optional.add_argument('--num_boots', '-boots', type=int, nargs = '?', help = 'Number of bootstraps (default: 100)', default = 100)
    
     args = parser.parse_args()
         
