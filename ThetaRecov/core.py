@@ -644,7 +644,7 @@ def calc_inbreed_light(vcf_path, output_csv = "inbreed.csv", coverage = 3):
 
 
         abs_diff_among = np.abs(i_matrix - j_matrix) # (2,2,m)
-        diff_among_ij = np.sum(abs_diff_among * valid_mask) # (2,2)各ペアの総和
+        diff_among_ij = np.sum(np.sum(abs_diff_among * valid_mask, axis = 2)) # (2,2)各ペアの総和
         count_among_ij = np.sum(valid_mask)
 
         print(diff_among_ij)
