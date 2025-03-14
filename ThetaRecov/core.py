@@ -713,7 +713,6 @@ def calc_inbreed_boot(vcf_path, output_csv = "inbreed.csv", coverage = 3, num_bo
 
     for i in range(num_boots):
     
-        inbreed_results = []
 
         bootstrap_indices = np.random.choice(m, size =m, replace = True)
         gt_matrix_rand = gt_matrix_init[:, bootstrap_indices]
