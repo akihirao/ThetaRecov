@@ -634,29 +634,42 @@ def calc_inbreed_light(vcf_path, output_csv = "inbreed.csv", coverage = 3):
     #for i, j in combinations(range(gt_matrix_n_2_m.shape[0]), 2):
     for i, j in selected_combinations:
         # 4つのペアの絶対差を求める
-        diff_11_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 0,:])) # (iの1行目, jの1行目)
-        diff_11_mask = ~np.isnan(diff_11_indiv_gt_matrix).any(axis=0)
-        diff_11_indiv_gt_matrix_non_nan = diff_11_indiv_gt_matrix[:, diff_11_mask]
-        diff_among += np.sum(np.abs(np.diff(diff_11_indiv_gt_matrix_non_nan, axis=0)))
-        count_among += diff_11_indiv_gt_matrix_non_nan.shape[1]
+        gt_matrix_n_2_m_i = gt_matrix_n_2_m[i, 0, :]
+        gt_matrix_n_2_m_j = gt_matrix_n_2_m[j, 0, :]
 
-        diff_12_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
-        diff_12_mask = ~np.isnan(diff_12_indiv_gt_matrix).any(axis=0)
-        diff_12_indiv_gt_matrix_non_nan = diff_12_indiv_gt_matrix[:, diff_12_mask]
-        diff_among += np.sum(np.abs(np.diff(diff_12_indiv_gt_matrix_non_nan, axis=0)))
-        count_among += diff_12_indiv_gt_matrix_non_nan.shape[1]
+        i_matrix = gt_matrix_n_2_m_i[:, np.newaxis, :] #(2,1,m)
+        j_matrix = gt_matrix_n_2_m_j[np.newaxis, :, :] #(1,2,m)
 
-        diff_21_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 0, :])) # (iの1行目, jの1行目)
-        diff_21_mask = ~np.isnan(diff_21_indiv_gt_matrix).any(axis=0)
-        diff_21_indiv_gt_matrix_non_nan = diff_21_indiv_gt_matrix[:, diff_21_mask]
-        diff_among += np.sum(np.abs(np.diff(diff_21_indiv_gt_matrix_non_nan, axis=0)))
-        count_among += diff_21_indiv_gt_matrix_non_nan.shape[1]
+        valid_mask = ~np.isnan(i_matrix) & ~ np.isnan(j_matrix) #(2,2,m)
 
-        diff_22_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
-        diff_22_mask = ~np.isnan(diff_22_indiv_gt_matrix).any(axis=0)
-        diff_22_indiv_gt_matrix_non_nan = diff_22_indiv_gt_matrix[:, diff_22_mask]
-        diff_among += np.sum(np.abs(np.diff(diff_22_indiv_gt_matrix_non_nan, axis=0)))
-        count_among += diff_22_indiv_gt_matrix_non_nan.shape[1]
+        abs_diff_among = np.abs(i_matrix - j_matrix) # (2,2,m)
+        diff_among += np.sum(abs_diff * valid_mask) # (2,2)各ペアの総和
+        count_among += np.sum(valid_mask)
+
+
+        #diff_11_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 0,:])) # (iの1行目, jの1行目)
+        #diff_11_mask = ~np.isnan(diff_11_indiv_gt_matrix).any(axis=0)
+        #diff_11_indiv_gt_matrix_non_nan = diff_11_indiv_gt_matrix[:, diff_11_mask]
+        #diff_among += np.sum(np.abs(np.diff(diff_11_indiv_gt_matrix_non_nan, axis=0)))
+        #count_among += diff_11_indiv_gt_matrix_non_nan.shape[1]
+
+        #diff_12_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 0, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
+        #diff_12_mask = ~np.isnan(diff_12_indiv_gt_matrix).any(axis=0)
+        #diff_12_indiv_gt_matrix_non_nan = diff_12_indiv_gt_matrix[:, diff_12_mask]
+        #diff_among += np.sum(np.abs(np.diff(diff_12_indiv_gt_matrix_non_nan, axis=0)))
+        #count_among += diff_12_indiv_gt_matrix_non_nan.shape[1]
+
+        #diff_21_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 0, :])) # (iの1行目, jの1行目)
+        #diff_21_mask = ~np.isnan(diff_21_indiv_gt_matrix).any(axis=0)
+        #diff_21_indiv_gt_matrix_non_nan = diff_21_indiv_gt_matrix[:, diff_21_mask]
+        #diff_among += np.sum(np.abs(np.diff(diff_21_indiv_gt_matrix_non_nan, axis=0)))
+        #count_among += diff_21_indiv_gt_matrix_non_nan.shape[1]
+
+        #diff_22_indiv_gt_matrix = np.vstack((gt_matrix_n_2_m[i, 1, :], gt_matrix_n_2_m[j, 1, :])) # (iの1行目, jの1行目)
+        #diff_22_mask = ~np.isnan(diff_22_indiv_gt_matrix).any(axis=0)
+        #diff_22_indiv_gt_matrix_non_nan = diff_22_indiv_gt_matrix[:, diff_22_mask]
+        #diff_among += np.sum(np.abs(np.diff(diff_22_indiv_gt_matrix_non_nan, axis=0)))
+        #count_among += diff_22_indiv_gt_matrix_non_nan.shape[1]
 
     pi_among = diff_among/count_among
 
