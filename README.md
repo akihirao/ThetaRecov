@@ -6,9 +6,7 @@ Tajima's D is the normalized difference in two emprical estimators of population
 
 The equation is as follows:  
 ```math
-\[
-D = \frac{(\hat{\theta}_{\pi} - \hat{\theta}_{W}}{\mathrm{Var}(\hat{\theta}_{\pi} - \hat{\theta}_{W})}
-\]
+D = \frac{\hat{\theta}_{\pi} - \hat{\theta}_{W}}{\mathrm{Var}(\hat{\theta}_{\pi} - \hat{\theta}_{W})}
 ```
 
 *  <i>&#952;</i><sub>&#960;</sub>: a measure of population mutation rate calculated from the average number of pairwise nucleotide differences among haplotype copies of a locus
