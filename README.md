@@ -8,7 +8,7 @@ D = \frac{\hat{\theta}_{\pi} - \hat{\theta}_{W}}{\sqrt{\mathrm{Var}(\hat{\theta}
 ```
 
 *  <i>&#952;</i><sub>&#960;</sub>: a measure of population mutation rate calculated from the average number of pairwise nucleotide differences among haplotype copies of a locus
-* <i>&#952;</i><sub>W</sub>: a measure of population mutation rate calculated from the number of segragating site (S), also referred to as Watterson's <i>&#952;</i>. 
+* <i>&#952;</i><sub>W</sub>: a measure of population mutation rate calculated from the number of segragating site (<i>S</i>), also referred to as Watterson's <i>&#952;</i>. 
 
 
 ## Installation
